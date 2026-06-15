@@ -1,0 +1,42 @@
+# ── Environnement & secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── Symfony (apps/back) ───────────────────────────────────────────────────────
+apps/back/var/
+apps/back/vendor/
+apps/back/public/bundles/
+apps/back/.php-cs-fixer.cache
+apps/back/.phpunit.result.cache
+
+# ── Nuxt 3 (apps/front) ──────────────────────────────────────────────────────
+apps/front/.nuxt/
+apps/front/.output/
+apps/front/node_modules/
+apps/front/dist/
+apps/front/.cache/
+
+# ── Python (simulator) ───────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Système ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
