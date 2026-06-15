@@ -1,0 +1,72 @@
+services:
+
+  # ── Conteneur 1 : Back-End Symfony 7 ──────────────────────────────────────
+  back:
+    build:
+      context: ./apps/back
+      target: dev
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "${BACK_PORT:-8081}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - aurora
+
+  # ── Conteneur 2 : PostgreSQL ───────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aurora
+
+  # ── Conteneur 3 : PgAdmin ─────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - aurora
+
+  # ── Conteneur 4 : Front-End Nuxt 3 ────────────────────────────────────────
+  front:
+    build:
+      context: ./apps/front
+      target: dev
+    environment:
+      NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE}
+      NUXT_API_BASE_INTERNAL: http://back:8080
+    ports:
+      - "${FRONT_PORT:-3001}:3000"
+    depends_on:
+      - back
+    networks:
+      - aurora
+
+volumes:
+  pg_data:
+
+networks:
+  aurora:
+    driver: bridge
