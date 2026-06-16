@@ -64,13 +64,19 @@ docker compose up --build
 
 ### Simulateur IoT ESP32
 
-Dans un terminal séparé (Python 3.x requis, aucune dépendance externe) :
+D'abord, charger l'utilisateur et la sortie de démo (fixtures Doctrine) :
 
 ```bash
-python3 simulator/esp32_sim.py
+docker compose exec back php bin/console doctrine:fixtures:load --no-interaction
 ```
 
-Le script pousse des données de pression et de vitesse toutes les 2 secondes vers `POST /api/telemetry`.
+Puis, dans un terminal séparé (Python 3.x requis, aucune dépendance externe) :
+
+```bash
+API_BASE=http://localhost:8081 python3 simulator/esp32_sim.py
+```
+
+Le script récupère l'identifiant de la sortie de démo via `GET /api/rides/demo`, puis pousse des données de pression et de vitesse toutes les 2 secondes vers `POST /api/telemetry`. Ces données sont persistées et diffusées en direct (SSE) sur le tableau de bord live : <http://localhost:3001/dashboard>.
 
 ---
 

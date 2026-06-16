@@ -20,7 +20,9 @@
     <div class="grid grid-cols-3 gap-4 text-center text-xs text-gray-500 font-mono">
       <div><div class="text-[#FCE500] font-bold text-base">M01</div><div>Curated Routes</div></div>
       <div><div class="text-[#FCE500] font-bold text-base">M02</div><div>Pressure Guide</div></div>
-      <div><div class="text-[#FCE500] font-bold text-base">M03</div><div>Live Telemetry</div></div>
+      <NuxtLink to="/dashboard" class="hover:text-[#FCE500] transition-colors">
+        <div class="text-[#FCE500] font-bold text-base">M03</div><div>Live Telemetry</div>
+      </NuxtLink>
     </div>
   </div>
 </template>
