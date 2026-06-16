@@ -9,11 +9,28 @@ on:
 jobs:
   # ── Back-End : Symfony 7 ────────────────────────────────────────────────────
   back:
-    name: Back — PHP lint & composer
+    name: Back — PHP lint & PHPUnit
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: apps/back
+
+    # Base de test : les identifiants correspondent au DATABASE_URL du .env
+    # (postgresql://aurora:aurora@127.0.0.1:5432/aurora), donc rien à surcharger.
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: aurora
+          POSTGRES_PASSWORD: aurora
+          POSTGRES_DB: aurora
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aurora"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +39,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo, pdo_pgsql
+          extensions: pdo, pdo_pgsql, ctype, iconv
           coverage: none
 
       - name: Cache Composer
@@ -38,9 +55,13 @@ jobs:
       - name: PHP syntax check
         run: find src -name "*.php" -exec php -l {} \; | grep -v "^No syntax errors"  || true
 
+      - name: PHPUnit
+        # phpunit.dist.xml force APP_ENV=test ; bootstrap.php charge .env puis .env.test.
+        run: php vendor/bin/phpunit
+
   # ── Front-End : Nuxt 4 ─────────────────────────────────────────────────────
   front:
-    name: Front — typecheck & build
+    name: Front — Vitest & build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,6 +82,9 @@ jobs:
 
       - name: Generate Nuxt types
         run: npm run postinstall
+
+      - name: Unit tests (Vitest)
+        run: npm run test
 
       - name: Build
         run: npm run build
