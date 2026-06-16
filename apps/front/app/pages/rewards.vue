@@ -13,11 +13,10 @@ const RANKS = [
   { key: 'michelin_ambassador', label: 'Michelin Ambassador', min: 8000, color: 'var(--red)' },
 ]
 
-const apiBase = useApiBase()
 const toast = useToast()
 const router = useRouter()
 
-const { data: rewards, refresh } = await useFetch<RewardsDto>(() => `${apiBase}/api/rewards`, { key: 'rewards' })
+const { data: rewards, refresh } = await useApiFetch<RewardsDto>('/api/rewards', { key: 'rewards' })
 
 const curIdx = computed(() => Math.max(0, RANKS.findIndex(r => r.key === rewards.value?.rank)))
 const next = computed(() => RANKS[curIdx.value + 1] ?? RANKS[RANKS.length - 1])
@@ -42,7 +41,7 @@ async function redeem(item: CatalogItem) {
   if ((rewards.value?.points ?? 0) < item.cost) return
   redeeming.value = item.id
   try {
-    await $fetch(`${apiBase}/api/rewards/redeem/${item.id}`, { method: 'POST' })
+    await $apiFetch(`/api/rewards/redeem/${item.id}`, { method: 'POST' })
     await refresh()
     toast.show(`Récompense échangée · ${item.title}`, 'gift')
   } catch {

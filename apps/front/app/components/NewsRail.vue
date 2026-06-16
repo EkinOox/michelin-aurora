@@ -11,10 +11,9 @@ interface NewsArticleDto {
   body: string
 }
 
-const apiBase = useApiBase()
 const { open } = useArticleSheet()
 
-const { data: news } = await useFetch<NewsArticleDto[]>(() => `${apiBase}/api/news`, { key: 'news', default: () => [] })
+const { data: news } = await useApiFetch<NewsArticleDto[]>('/api/news', { key: 'news', default: () => [] })
 
 function onOpen(n: NewsArticleDto) {
   open({ id: n.id, tag: n.tag, title: n.title, date: n.date, read: n.read_time, img: imageFor(n.image_key), body: n.body })

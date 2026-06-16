@@ -30,10 +30,10 @@
       </div>
 
       <div class="pad rise d3" style="margin-top: 22px; display: flex; flex-direction: column; gap: 12px">
-        <NuxtLink to="/onboarding" class="btn btn-blue btn-block">
+        <NuxtLink to="/register" class="btn btn-blue btn-block">
           Créer mon profil cycliste <Icon name="arrow" :size="20" />
         </NuxtLink>
-        <NuxtLink to="/home" class="btn btn-tertiary btn-block">
+        <NuxtLink to="/login" class="btn btn-tertiary btn-block">
           J'ai déjà un compte
         </NuxtLink>
         <div class="tiny" style="text-align: center; margin-top: 4px">

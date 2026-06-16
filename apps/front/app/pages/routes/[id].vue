@@ -21,9 +21,8 @@ interface RouteDetailDto {
 
 const route = useRoute()
 const router = useRouter()
-const apiBase = useApiBase()
 
-const { data: r } = await useFetch<RouteDetailDto>(() => `${apiBase}/api/routes/${route.params.id}`, { key: `route-detail-${route.params.id}` })
+const { data: r } = await useApiFetch<RouteDetailDto>(() => `/api/routes/${route.params.id}`, { key: `route-detail-${route.params.id}` })
 
 const layer = ref('Plan')
 const compatible = computed(() => (r.value?.match_score ?? 0) >= 85)

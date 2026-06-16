@@ -3,9 +3,8 @@ import type { RouteDto } from '~/components/RouteRow.vue'
 
 definePageMeta({ tabbar: true })
 
-const apiBase = useApiBase()
-const { data: routes } = await useFetch<RouteDto[]>(() => `${apiBase}/api/routes`, { key: 'routes-list', default: () => [] })
-const { data: profile } = await useFetch<{ profile: { bike_type: string, rider_level: string } | null }>(() => `${apiBase}/api/profile`, { key: 'routes-profile' })
+const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'routes-list', default: () => [] })
+const { data: profile } = await useApiFetch<{ profile: { bike_type: string, rider_level: string } | null }>('/api/profile', { key: 'routes-profile' })
 
 const TYPE_LABEL: Record<string, string> = { route: 'Route', gravel: 'Gravel', vtt: 'VTT', vae: 'VAE' }
 const LEVEL_LABEL: Record<string, string> = { beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert' }

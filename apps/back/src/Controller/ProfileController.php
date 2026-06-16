@@ -6,9 +6,10 @@ use App\Entity\CyclistProfile;
 use App\Entity\Enum\BikeType;
 use App\Entity\Enum\RiderLevel;
 use App\Entity\Enum\UsageType;
+use App\Entity\User;
 use App\Repository\CyclistProfileRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,7 +18,7 @@ class ProfileController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserRepository $userRepository,
+        private Security $security,
         private CyclistProfileRepository $cyclistProfileRepository,
     ) {
     }
@@ -25,11 +26,8 @@ class ProfileController
     #[Route('/api/profile', name: 'api_profile_show', methods: ['GET'])]
     public function show(): JsonResponse
     {
-        $user = $this->userRepository->findOneBy([]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'No demo user found, run doctrine:fixtures:load'], 404);
-        }
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         $profile = $this->cyclistProfileRepository->findOneBy(['user' => $user]);
 
@@ -51,11 +49,8 @@ class ProfileController
     #[Route('/api/profile', name: 'api_profile_update', methods: ['PUT'])]
     public function update(Request $request): JsonResponse
     {
-        $user = $this->userRepository->findOneBy([]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'No demo user found, run doctrine:fixtures:load'], 404);
-        }
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         $payload = json_decode($request->getContent(), true) ?? [];
 

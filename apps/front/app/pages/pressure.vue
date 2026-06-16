@@ -3,11 +3,10 @@ definePageMeta({ tabbar: false })
 
 interface PressureDto { rain: boolean, front_bar: number, rear_bar: number }
 
-const apiBase = useApiBase()
 const router = useRouter()
 const rain = ref(true)
 
-const { data } = await useFetch<PressureDto>(() => `${apiBase}/api/pressure`, { key: 'pressure', query: { rain: rain.value ? 1 : 0 }, watch: [rain] })
+const { data } = await useApiFetch<PressureDto>('/api/pressure', { key: 'pressure', query: { rain: rain.value ? 1 : 0 }, watch: [rain] })
 
 const reco = computed(() => data.value?.rear_bar ?? 2.9)
 const front = computed(() => data.value?.front_bar ?? 2.7)

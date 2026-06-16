@@ -36,7 +36,7 @@ function fmt(n: number, d = 1) {
 
 async function startRide() {
   if (!activeRide.value) {
-    const ride = await $fetch<{ id: string }>(`${apiBase}/api/rides`, {
+    const ride = await $apiFetch<{ id: string }>('/api/rides', {
       method: 'POST',
       body: { terrain_type: 'mixed' },
     })

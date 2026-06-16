@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const apiBase = useApiBase()
 const router = useRouter()
 
 const BIKE_OPTIONS = [
@@ -38,7 +37,7 @@ function togglePref(p: string) {
 async function activate() {
   saving.value = true
   try {
-    await $fetch(`${apiBase}/api/profile`, {
+    await $apiFetch('/api/profile', {
       method: 'PUT',
       body: {
         bike_type: bike.value,
