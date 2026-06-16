@@ -1,13 +1,16 @@
 # ── Environnement & secrets ───────────────────────────────────────────────────
-.env
-.env.local
+# Racine (docker-compose) : .env contient les vrais secrets, jamais commité.
+/.env
 .env.*.local
 *.pem
 *.key
 *.p12
 *.pfx
 
-# ── Symfony (apps/back) ───────────────────────────────────────────────────────
+# ── Symfony (apps/back) ────────────────────────────────────────────────────────
+# Convention Symfony : apps/back/.env est commité (valeurs par défaut, sans
+# secret de prod) ; apps/back/.env.local contient les overrides locaux/secrets.
+apps/back/.env.local
 apps/back/var/
 apps/back/vendor/
 apps/back/public/bundles/
