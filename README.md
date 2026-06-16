@@ -80,6 +80,43 @@ Le script récupère l'identifiant de la sortie de démo via `GET /api/rides/dem
 
 ---
 
+## Automatisation (Taskfile)
+
+Les tâches courantes sont automatisées avec [go-task](https://taskfile.dev). Les commandes
+back/front s'exécutent **dans les conteneurs Docker** : aucun PHP/Node requis en local.
+
+### Installation de go-task
+
+```bash
+# Windows (winget)
+winget install Task.Task
+# ou via Scoop / Chocolatey : scoop install task | choco install go-task
+```
+
+### Tâches principales
+
+```bash
+task                 # liste toutes les tâches
+task up              # démarre la stack (détaché)
+task up:build        # démarre en (re)buildant les images
+task down            # arrête la stack
+task logs -- back    # logs suivis d'un service
+task install         # installe les dépendances back + front
+task test            # lance tous les tests (back PHPUnit + front Vitest)
+task back:test       # tests PHPUnit uniquement
+task front:test      # tests Vitest uniquement
+task front:test:e2e  # tests end-to-end Playwright
+task fixtures        # charge les fixtures Doctrine
+task migrate         # applique les migrations Doctrine
+task db:reset        # recrée la base + migrations + fixtures
+task shell:back      # shell dans le conteneur back
+task sim             # lance le simulateur IoT (Python, sur l'hôte)
+```
+
+> ℹ️ La stack doit être démarrée (`task up`) avant les tâches qui ciblent les conteneurs.
+
+---
+
 ## Développement local (sans Docker)
 
 ### Back-end Symfony

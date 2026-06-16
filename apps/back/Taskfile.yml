@@ -1,0 +1,48 @@
+version: '3'
+
+# Taskfile back (Symfony) — commandes exécutées DANS le conteneur `back`.
+# Appelé depuis le Taskfile racine sous le namespace `back:`.
+# La stack doit être démarrée (`task up`) avant d'utiliser ces tâches.
+
+vars:
+  # -T : pas de pseudo-TTY, indispensable pour un usage non interactif.
+  EXEC: docker compose exec -T back
+
+tasks:
+  install:
+    desc: Installe les dépendances Composer (dans le conteneur)
+    cmds:
+      - '{{.EXEC}} composer install'
+
+  test:
+    desc: 'Lance les tests PHPUnit. Usage : task back:test -- --filter HealthTest'
+    cmds:
+      - '{{.EXEC}} php vendor/bin/phpunit {{.CLI_ARGS}}'
+
+  fixtures:
+    desc: Charge les fixtures Doctrine
+    cmds:
+      - '{{.EXEC}} php bin/console doctrine:fixtures:load --no-interaction'
+
+  migrate:
+    desc: Applique les migrations Doctrine
+    cmds:
+      - '{{.EXEC}} php bin/console doctrine:migrations:migrate --no-interaction'
+
+  db:reset:
+    desc: Drop + create la base, migrations, puis fixtures
+    cmds:
+      - '{{.EXEC}} php bin/console doctrine:database:drop --force --if-exists'
+      - '{{.EXEC}} php bin/console doctrine:database:create'
+      - '{{.EXEC}} php bin/console doctrine:migrations:migrate --no-interaction'
+      - '{{.EXEC}} php bin/console doctrine:fixtures:load --no-interaction'
+
+  cc:
+    desc: Vide le cache Symfony
+    cmds:
+      - '{{.EXEC}} php bin/console cache:clear'
+
+  shell:
+    desc: Ouvre un shell dans le conteneur back
+    cmds:
+      - docker compose exec back sh

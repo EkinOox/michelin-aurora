@@ -1,0 +1,40 @@
+version: '3'
+
+# Taskfile front (Nuxt) — commandes exécutées DANS le conteneur `front`.
+# Appelé depuis le Taskfile racine sous le namespace `front:`.
+# La stack doit être démarrée (`task up`) avant d'utiliser ces tâches.
+
+vars:
+  # -T : pas de pseudo-TTY, indispensable pour un usage non interactif.
+  EXEC: docker compose exec -T front
+
+tasks:
+  install:
+    desc: Installe les dépendances npm (dans le conteneur)
+    cmds:
+      - '{{.EXEC}} npm install'
+
+  dev:
+    desc: Lance le serveur de dev Nuxt
+    cmds:
+      - '{{.EXEC}} npm run dev'
+
+  build:
+    desc: Build de production Nuxt
+    cmds:
+      - '{{.EXEC}} npm run build'
+
+  test:
+    desc: 'Lance les tests unitaires (Vitest). Usage : task front:test -- --watch'
+    cmds:
+      - '{{.EXEC}} npm run test {{.CLI_ARGS}}'
+
+  test:e2e:
+    desc: Lance les tests end-to-end (Playwright)
+    cmds:
+      - '{{.EXEC}} npm run test:e2e {{.CLI_ARGS}}'
+
+  shell:
+    desc: Ouvre un shell dans le conteneur front
+    cmds:
+      - docker compose exec front sh
