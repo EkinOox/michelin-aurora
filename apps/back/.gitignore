@@ -1,4 +1,8 @@
 
+# Convention Symfony : .env (valeurs par défaut, sans secret) est versionné.
+# Re-inclusion explicite car le .gitignore racine ignore globalement `.env`.
+!.env
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -8,3 +12,13 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+# Artefacts runtime de supervisord (générés à l'exécution, pas versionnés).
+*.pid
+/supervisord.log

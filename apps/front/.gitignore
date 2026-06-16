@@ -2,6 +2,7 @@
 .output
 .data
 .nuxt
+.nuxtrc
 .nitro
 .cache
 dist
@@ -12,6 +13,11 @@ node_modules
 # Logs
 logs
 *.log
+
+# Tests
+test-results
+playwright-report
+playwright/.cache
 
 # Misc
 .DS_Store
