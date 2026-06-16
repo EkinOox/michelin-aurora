@@ -8,7 +8,7 @@
 
 **Tech Stack:** Docker multi-stage, Nuxt 4 (Nitro/node), Symfony 7 (PHP 8.4-fpm + nginx + supervisor), Postgres 16, nginx:alpine, GitHub Actions, GHCR.
 
-**Note sur la nature « infra » de ce plan :** un Dockerfile/compose ne se teste pas en TDD unitaire. Le « test » de chaque tâche = build de l'image et/ou smoke test HTTP. Les étapes de vérification jouent ce rôle.
+**Note sur la nature « infra » de ce plan :** un Dockerfile/compose ne se teste pas en TDD unitaire. Le « test » de chaque tâche = build de l'image et/ou smoke test HTTP en local (Docker Desktop). Les étapes de vérification jouent ce rôle.
 
 ---
 

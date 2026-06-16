@@ -162,4 +162,40 @@ Copier `apps/front/.env.example` → `apps/front/.env` pour le dev local.
 
 ---
 
+## Déploiement (prod)
+
+Le projet tourne sur `167.233.142.20` (HTTP, port 80) via un reverse proxy nginx
+qui route `/api/*` vers le back Symfony et le reste vers le front Nuxt.
+
+### Pipeline automatique
+À chaque push sur `main`, GitHub Actions (`cd.yml`) :
+1. build & push les images prod sur GHCR (`michelin-aurora-back`, `-front`) ;
+2. copie `deploy/` sur le serveur en SSH ;
+3. exécute `docker compose -f docker-compose.prod.yml --env-file .env.prod pull && up -d`.
+
+### Setup serveur (une seule fois)
+1. Installer Docker Engine + plugin compose.
+2. `mkdir -p /opt/michelin-aurora` puis y créer `.env.prod`
+   (copier `deploy/.env.prod.example`, renseigner les vrais secrets).
+   `NUXT_PUBLIC_API_BASE=http://167.233.142.20`.
+3. Générer une clé SSH dédiée, ajouter la clé publique aux `authorized_keys`
+   du serveur.
+
+### Secrets GitHub à configurer
+`SSH_HOST` = `167.233.142.20`, `SSH_USER` = `root`, `SSH_KEY` = clé SSH privée.
+
+### Packages GHCR
+Rendre `michelin-aurora-back` et `michelin-aurora-front` **publics**
+(Repo → Packages → Package settings → Change visibility) pour éviter tout
+`docker login` sur le serveur.
+
+### Déploiement manuel (dépannage)
+```bash
+cd /opt/michelin-aurora
+docker compose -f docker-compose.prod.yml --env-file .env.prod pull
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+```
+
+---
+
 *Document interne confidentiel · Version 2.1*
