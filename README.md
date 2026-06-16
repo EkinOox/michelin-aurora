@@ -60,7 +60,7 @@ docker compose up --build
 |---------|-----|
 | Front-end Nuxt | <http://localhost:3000> |
 | API Symfony | <http://localhost:8080/api/health> |
-| PgAdmin | <http://localhost:5050> (admin@michelin-aurora.local / aurora) |
+| PgAdmin | <http://localhost:5050> (admin@michelin-aurora.dev / aurora) |
 
 ### Simulateur IoT ESP32
 
