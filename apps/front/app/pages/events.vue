@@ -15,12 +15,11 @@ interface EventDto {
   image_key: string | null
 }
 
-const apiBase = useApiBase()
 const router = useRouter()
 const toast = useToast()
 const retailerSheet = useRetailerSheet()
 
-const { data: events } = await useFetch<EventDto[]>(() => `${apiBase}/api/events`, { key: 'events', default: () => [] })
+const { data: events } = await useApiFetch<EventDto[]>('/api/events', { key: 'events', default: () => [] })
 
 const TYPE_LABEL: Record<string, string> = { endurance: 'Endurance', gravel: 'Gravel', route: 'Route' }
 

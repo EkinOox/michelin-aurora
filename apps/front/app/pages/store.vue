@@ -16,11 +16,10 @@ interface TireDto {
   color_token: string | null
 }
 
-const apiBase = useApiBase()
 const router = useRouter()
 const retailerSheet = useRetailerSheet()
 
-const { data: tires } = await useFetch<TireDto[]>(() => `${apiBase}/api/tires`, { key: 'store-tires', default: () => [] })
+const { data: tires } = await useApiFetch<TireDto[]>('/api/tires', { key: 'store-tires', default: () => [] })
 
 function openRetailer(t?: TireDto) {
   retailerSheet.open(t ? { name: t.name } : undefined)

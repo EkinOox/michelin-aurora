@@ -136,6 +136,16 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 .chip-dark{ background:var(--ink); color:#fff; border-color:var(--ink); }
 .chip-sm{ height:28px; padding:0 11px; font-size:12px; }
 
+/* ---------- Inputs ---------- */
+.input{
+  height:50px; padding:0 16px; border-radius:var(--r-sm);
+  font-size:15px; font-weight:600; color:var(--ink);
+  background:var(--surface); border:1.5px solid var(--line);
+  font-family:var(--font); transition:border-color .18s ease;
+}
+.input::placeholder{ color:var(--mute); font-weight:500; }
+.input:focus{ outline:none; border-color:var(--blue); }
+
 /* ---------- Buttons ---------- */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:9px;

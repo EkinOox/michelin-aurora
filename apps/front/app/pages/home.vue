@@ -20,12 +20,10 @@ interface TireDto {
 }
 interface RewardsDto { points: number, rank: string, next_at: number | null }
 
-const apiBase = useApiBase()
-
-const { data: profile } = await useFetch<ProfileDto>(() => `${apiBase}/api/profile`, { key: 'home-profile' })
-const { data: tires } = await useFetch<TireDto[]>(() => `${apiBase}/api/tires`, { key: 'home-tires', default: () => [] })
-const { data: rewards } = await useFetch<RewardsDto>(() => `${apiBase}/api/rewards`, { key: 'home-rewards' })
-const { data: routes } = await useFetch<RouteDto[]>(() => `${apiBase}/api/routes`, { key: 'home-routes', default: () => [] })
+const { data: profile } = await useApiFetch<ProfileDto>('/api/profile', { key: 'home-profile' })
+const { data: tires } = await useApiFetch<TireDto[]>('/api/tires', { key: 'home-tires', default: () => [] })
+const { data: rewards } = await useApiFetch<RewardsDto>('/api/rewards', { key: 'home-rewards' })
+const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'home-routes', default: () => [] })
 
 const initials = computed(() => {
   const n = profile.value?.name ?? ''

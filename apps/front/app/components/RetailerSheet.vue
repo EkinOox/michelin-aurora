@@ -7,9 +7,8 @@ interface Retailer {
 
 const { product, close } = useRetailerSheet()
 const { show } = useToast()
-const apiBase = useApiBase()
 
-const { data: retailers } = await useFetch<Retailer[]>(() => `${apiBase}/api/retailers`, { key: 'retailers', default: () => [] })
+const { data: retailers } = await useApiFetch<Retailer[]>('/api/retailers', { key: 'retailers', default: () => [] })
 
 const name = computed(() => product.value?.name || 'Produit Michelin')
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: false })
 
-const apiBase = useApiBase()
 const router = useRouter()
 const activeRide = useActiveRide()
 const retailerSheet = useRetailerSheet()
@@ -18,7 +17,7 @@ let posted = false
 
 async function postReading(rear: number, alert: boolean) {
   if (!activeRide.value) return
-  await $fetch(`${apiBase}/api/telemetry`, {
+  await $apiFetch('/api/telemetry', {
     method: 'POST',
     body: {
       ride_id: activeRide.value,

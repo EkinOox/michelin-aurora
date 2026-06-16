@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Enum\RewardsLevel;
 use App\Entity\RewardCode;
+use App\Entity\User;
 use App\Repository\RewardCatalogItemRepository;
 use App\Repository\RewardCodeRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -23,7 +24,7 @@ class RewardController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserRepository $userRepository,
+        private Security $security,
         private RewardCatalogItemRepository $rewardCatalogItemRepository,
         private RewardCodeRepository $rewardCodeRepository,
     ) {
@@ -32,11 +33,8 @@ class RewardController
     #[Route('/api/rewards', name: 'api_rewards_show', methods: ['GET'])]
     public function show(): JsonResponse
     {
-        $user = $this->userRepository->findOneBy([]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'No demo user found, run doctrine:fixtures:load'], 404);
-        }
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         $points = $user->getTotalPoints();
         $nextAt = null;
@@ -75,11 +73,8 @@ class RewardController
     #[Route('/api/rewards/redeem/{id}', name: 'api_rewards_redeem', methods: ['POST'])]
     public function redeem(string $id): JsonResponse
     {
-        $user = $this->userRepository->findOneBy([]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'No demo user found, run doctrine:fixtures:load'], 404);
-        }
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         $item = $this->rewardCatalogItemRepository->find($id);
 

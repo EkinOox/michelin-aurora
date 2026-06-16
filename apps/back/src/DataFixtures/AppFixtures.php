@@ -21,9 +21,15 @@ use App\Entity\Tire;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $user = new User();
@@ -32,6 +38,7 @@ class AppFixtures extends Fixture
         $user->setCity('Clermont-Ferrand');
         $user->setTotalPoints(3820);
         $user->setRewardsLevel(RewardsLevel::Performer);
+        $user->setPassword($this->passwordHasher->hashPassword($user, 'demo12345'));
         $manager->persist($user);
 
         $profile = new CyclistProfile();

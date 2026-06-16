@@ -22,3 +22,7 @@
 # Artefacts runtime de supervisord (générés à l'exécution, pas versionnés).
 *.pid
 /supervisord.log
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

@@ -21,12 +21,12 @@ const BIKE_LABEL: Record<string, string> = { route: 'Route', gravel: 'Gravel', v
 const LEVEL_LABEL: Record<string, string> = { beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert' }
 const USAGE_LABEL: Record<string, string> = { leisure: 'Loisir', sport: 'Performance', competition: 'Compétition', commute: 'Transport' }
 
-const apiBase = useApiBase()
 const router = useRouter()
 const toast = useToast()
 const retailerSheet = useRetailerSheet()
+const { logout: logoutAuth } = useAuth()
 
-const { data: profile } = await useFetch<ProfileDto>(() => `${apiBase}/api/profile`, { key: 'profile' })
+const { data: profile } = await useApiFetch<ProfileDto>('/api/profile', { key: 'profile' })
 
 const initials = computed(() => {
   const n = profile.value?.name ?? ''
@@ -59,6 +59,7 @@ function settings() {
   toast.show('Réglages · bientôt', 'settings')
 }
 function logout() {
+  logoutAuth()
   router.push('/')
 }
 </script>

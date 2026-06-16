@@ -18,12 +18,11 @@ const RANK_LABEL: Record<string, string> = {
   michelin_ambassador: 'Michelin Ambassador',
 }
 
-const apiBase = useApiBase()
 const router = useRouter()
 const toast = useToast()
 const retailerSheet = useRetailerSheet()
 
-const { data: riders } = await useFetch<RiderDto[]>(() => `${apiBase}/api/community/riders`, { key: 'community-riders', default: () => [] })
+const { data: riders } = await useApiFetch<RiderDto[]>('/api/community/riders', { key: 'community-riders', default: () => [] })
 
 function viewProfile(name: string) {
   toast.show(`Profil de ${name} · bientôt`, 'user')

@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Enum\TerrainType;
 use App\Entity\Ride;
+use App\Entity\User;
 use App\Repository\RideRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,7 +17,7 @@ class RideController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private RideRepository $rideRepository,
-        private UserRepository $userRepository,
+        private Security $security,
     ) {
     }
 
@@ -39,11 +40,8 @@ class RideController
     #[Route('/api/rides', name: 'api_rides_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $user = $this->userRepository->findOneBy([]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'No demo user found, run doctrine:fixtures:load'], 404);
-        }
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         $payload = json_decode($request->getContent(), true) ?? [];
 
