@@ -15,8 +15,8 @@ jobs:
       run:
         working-directory: apps/back
 
-    # Base de test : les identifiants correspondent au DATABASE_URL du .env
-    # (postgresql://aurora:aurora@127.0.0.1:5432/aurora), donc rien à surcharger.
+    # Base de test PostgreSQL, accessible sur 127.0.0.1 (DATABASE_URL surchargé
+    # au niveau du step PHPUnit, car le .env committé vise le host docker `db`).
     services:
       db:
         image: postgres:16-alpine
@@ -57,7 +57,11 @@ jobs:
 
       - name: PHPUnit
         # phpunit.dist.xml force APP_ENV=test ; bootstrap.php charge .env puis .env.test.
+        # Le .env committé pointe sur le host docker `db` ; en CI on cible le
+        # service postgres sur 127.0.0.1 (les vars d'env réelles priment sur .env).
         run: php vendor/bin/phpunit
+        env:
+          DATABASE_URL: postgresql://aurora:aurora@127.0.0.1:5432/aurora?serverVersion=16
 
   # ── Front-End : Nuxt 4 ─────────────────────────────────────────────────────
   front:
