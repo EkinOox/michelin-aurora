@@ -1,0 +1,8 @@
+# Secrets/overrides locaux : NE JAMAIS embarquer dans l'image.
+.env.local
+.env.*.local
+
+# Régénérés dans l'image / propres à l'hôte.
+vendor/
+var/
+.git

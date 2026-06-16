@@ -2,6 +2,8 @@
 # Racine (docker-compose) : .env contient les vrais secrets, jamais commité.
 /.env
 .env.*.local
+# Secrets de prod côté serveur (jamais commités) ; seul .env.prod.example l'est.
+/deploy/.env.prod
 *.pem
 *.key
 *.p12

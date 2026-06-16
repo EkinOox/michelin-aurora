@@ -1,0 +1,66 @@
+services:
+
+  # ── Reverse proxy edge : seul service exposé publiquement (port 80) ─────────
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - back
+      - front
+    restart: unless-stopped
+    networks:
+      - aurora
+
+  # ── Back-End Symfony (image GHCR) ──────────────────────────────────────────
+  back:
+    image: ghcr.io/ekinoox/michelin-aurora-back:latest
+    environment:
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - aurora
+
+  # ── Front-End Nuxt (image GHCR) ────────────────────────────────────────────
+  front:
+    image: ghcr.io/ekinoox/michelin-aurora-front:latest
+    environment:
+      NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE}
+      NUXT_API_BASE_INTERNAL: http://back:8080
+    depends_on:
+      - back
+    restart: unless-stopped
+    networks:
+      - aurora
+
+  # ── PostgreSQL (non exposé publiquement) ───────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - aurora
+
+volumes:
+  pg_data:
+
+networks:
+  aurora:
+    driver: bridge
