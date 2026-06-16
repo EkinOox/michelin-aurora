@@ -1,0 +1,116 @@
+version: '3'
+
+# Taskfile racine — orchestre la stack Docker et délègue aux Taskfiles des apps.
+# Prérequis : go-task (https://taskfile.dev) + Docker Desktop.
+# Lister les tâches : `task` ou `task --list`
+
+vars:
+  DC: docker compose
+
+includes:
+  back:
+    taskfile: ./apps/back/Taskfile.yml
+    dir: .
+  front:
+    taskfile: ./apps/front/Taskfile.yml
+    dir: .
+
+tasks:
+  default:
+    desc: Liste les tâches disponibles
+    cmds:
+      - task --list
+    silent: true
+
+  # ── Stack Docker ────────────────────────────────────────────────────────────
+  up:
+    desc: Démarre toute la stack en arrière-plan
+    cmds:
+      - '{{.DC}} up -d'
+
+  up:build:
+    desc: Démarre la stack en (re)buildant les images
+    cmds:
+      - '{{.DC}} up -d --build'
+
+  down:
+    desc: Arrête la stack
+    cmds:
+      - '{{.DC}} down'
+
+  down:volumes:
+    desc: Arrête la stack et SUPPRIME les volumes (⚠ efface la BDD)
+    cmds:
+      - '{{.DC}} down -v'
+
+  restart:
+    desc: Redémarre la stack
+    cmds:
+      - task: down
+      - task: up
+
+  build:
+    desc: Build les images Docker
+    cmds:
+      - '{{.DC}} build'
+
+  rebuild:
+    desc: Rebuild les images sans cache
+    cmds:
+      - '{{.DC}} build --no-cache'
+
+  logs:
+    desc: 'Logs en suivi. Usage : task logs -- back'
+    cmds:
+      - '{{.DC}} logs -f {{.CLI_ARGS}}'
+
+  ps:
+    desc: État des conteneurs
+    cmds:
+      - '{{.DC}} ps'
+
+  # ── Agrégats back + front ───────────────────────────────────────────────────
+  install:
+    desc: Installe les dépendances back ET front
+    cmds:
+      - task: back:install
+      - task: front:install
+
+  test:
+    desc: Lance tous les tests (back PHPUnit + front Vitest)
+    cmds:
+      - task: back:test
+      - task: front:test
+
+  # ── Raccourcis back ─────────────────────────────────────────────────────────
+  fixtures:
+    desc: Charge les fixtures Doctrine
+    cmds:
+      - task: back:fixtures
+
+  migrate:
+    desc: Applique les migrations Doctrine
+    cmds:
+      - task: back:migrate
+
+  db:reset:
+    desc: Recrée la base, applique les migrations puis recharge les fixtures
+    cmds:
+      - task: back:db:reset
+
+  # ── Shells ──────────────────────────────────────────────────────────────────
+  shell:back:
+    desc: Ouvre un shell dans le conteneur back
+    cmds:
+      - '{{.DC}} exec back sh'
+
+  shell:front:
+    desc: Ouvre un shell dans le conteneur front
+    cmds:
+      - '{{.DC}} exec front sh'
+
+  # ── Simulateur IoT ──────────────────────────────────────────────────────────
+  sim:
+    desc: Lance le simulateur IoT ESP32 (Python, sur l'hôte)
+    cmds:
+      - python simulator/esp32_sim.py
