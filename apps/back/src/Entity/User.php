@@ -30,6 +30,12 @@ class User
     #[ORM\Column(type: Types::INTEGER)]
     private int $totalPoints = 0;
 
+    #[ORM\Column(length: 255)]
+    private string $name = '';
+
+    #[ORM\Column(length: 255)]
+    private string $city = '';
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -77,6 +83,30 @@ class User
     public function setTotalPoints(int $totalPoints): static
     {
         $this->totalPoints = $totalPoints;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
 
         return $this;
     }

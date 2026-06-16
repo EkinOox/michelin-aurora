@@ -1,42 +1,45 @@
+<script setup lang="ts"></script>
+
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
-    <div class="text-center">
-      <p class="text-[#FCE500] font-mono text-xs tracking-widest uppercase mb-2">Michelin LB 2 Wheels</p>
-      <h1 class="text-5xl font-black italic">
-        <span class="text-[#FCE500]">Michelin</span> Aurora
-      </h1>
-      <p class="text-gray-400 mt-2 text-sm">Cycling Intelligence Platform</p>
-    </div>
+  <div class="screen" style="background: radial-gradient(120% 80% at 50% 8%, #F5F7F0 0%, var(--bg) 50%, #DEE3D6 100%)">
+    <div class="screen-scroll" style="padding-bottom: 34px; display: flex; flex-direction: column">
+      <div class="pad safe-top rise" style="padding-top: 50px">
+        <div class="between">
+          <div style="line-height: 1">
+            <div style="font-size: 30px; font-weight: 800; letter-spacing: -.03em; color: var(--ink)">
+              AUR<span style="color: var(--yellow)">O</span>RA
+            </div>
+            <div class="eyebrow" style="margin-top: 6px; color: var(--ink-3)">by Michelin · 2 Wheels</div>
+          </div>
+          <MichelinLogo :height="26" />
+        </div>
+      </div>
 
-    <div class="w-12 h-0.5 bg-[#FCE500] rounded" />
+      <div class="rise d1" style="height: 320px; margin-top: 6px">
+        <TireScene />
+      </div>
 
-    <div class="bg-[#27509B] rounded-lg px-6 py-4 text-center max-w-sm w-full">
-      <p class="font-mono text-[10px] text-[#FCE500] uppercase tracking-widest mb-2">API Status</p>
-      <p v-if="pending" class="text-gray-300 text-sm">Connexion en cours…</p>
-      <p v-else-if="error" class="text-red-400 text-sm">⚠ API inaccessible</p>
-      <p v-else class="text-green-400 font-bold">✓ {{ data?.message }}</p>
-    </div>
+      <div class="pad rise d2" style="margin-top: 4px">
+        <div class="eyebrow" style="color: var(--lime-600)">Cycling Intelligence Platform</div>
+        <div class="h-xl" style="margin-top: 10px; max-width: 300px">
+          La liaison au sol,<br>devenue intelligence.
+        </div>
+        <div class="body" style="margin-top: 12px; max-width: 300px">
+          Itinéraires sur-mesure, pression dynamique, télémétrie temps réel et récompenses à chaque kilomètre.
+        </div>
+      </div>
 
-    <div class="grid grid-cols-3 gap-4 text-center text-xs text-gray-500 font-mono">
-      <div><div class="text-[#FCE500] font-bold text-base">M01</div><div>Curated Routes</div></div>
-      <div><div class="text-[#FCE500] font-bold text-base">M02</div><div>Pressure Guide</div></div>
-      <NuxtLink to="/dashboard" class="hover:text-[#FCE500] transition-colors">
-        <div class="text-[#FCE500] font-bold text-base">M03</div><div>Live Telemetry</div>
-      </NuxtLink>
+      <div class="pad rise d3" style="margin-top: 22px; display: flex; flex-direction: column; gap: 12px">
+        <NuxtLink to="/onboarding" class="btn btn-blue btn-block">
+          Créer mon profil cycliste <Icon name="arrow" :size="20" />
+        </NuxtLink>
+        <NuxtLink to="/home" class="btn btn-tertiary btn-block">
+          J'ai déjà un compte
+        </NuxtLink>
+        <div class="tiny" style="text-align: center; margin-top: 4px">
+          Michelin LB 2 Wheels · Route · Gravel · VTT · VAE
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const config = useRuntimeConfig()
-
-// En SSR (dans le conteneur Docker) on passe par le réseau interne Docker.
-// En CSR (dans le navigateur) on passe par le port exposé sur l'hôte.
-const apiBase = import.meta.server
-  ? config.apiBaseInternal
-  : config.public.apiBase
-
-const { data, pending, error } = await useFetch<{ message: string }>(
-  `${apiBase}/api/health`
-)
-</script>

@@ -1,5 +1,16 @@
+<script setup lang="ts">
+const route = useRoute()
+const showTab = computed(() => Boolean(route.meta.tabbar))
+</script>
+
 <template>
-  <div class="min-h-screen bg-[#1A1A1A] text-white">
-    <slot />
+  <div class="aurora-shell">
+    <div class="aurora-app">
+      <slot />
+      <TabBar v-if="showTab" />
+      <Toast />
+      <RetailerSheet />
+      <ArticleSheet />
+    </div>
   </div>
 </template>

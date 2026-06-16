@@ -38,6 +38,33 @@ class Route
     #[ORM\JoinColumn(name: 'tire_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Tire $tire = null;
 
+    #[ORM\Column(type: Types::FLOAT)]
+    private float $distanceKm = 0.0;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $elevationGainM = 0;
+
+    #[ORM\Column(length: 64)]
+    private string $surface;
+
+    #[ORM\Column(length: 32)]
+    private string $durationLabel;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private string $description;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $safetyScore = 0;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $funScore = 0;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $matchScore = 0;
+
+    #[ORM\Column(length: 64)]
+    private string $tag;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -111,6 +138,114 @@ class Route
     public function setTire(?Tire $tire): static
     {
         $this->tire = $tire;
+
+        return $this;
+    }
+
+    public function getDistanceKm(): float
+    {
+        return $this->distanceKm;
+    }
+
+    public function setDistanceKm(float $distanceKm): static
+    {
+        $this->distanceKm = $distanceKm;
+
+        return $this;
+    }
+
+    public function getElevationGainM(): int
+    {
+        return $this->elevationGainM;
+    }
+
+    public function setElevationGainM(int $elevationGainM): static
+    {
+        $this->elevationGainM = $elevationGainM;
+
+        return $this;
+    }
+
+    public function getSurface(): string
+    {
+        return $this->surface;
+    }
+
+    public function setSurface(string $surface): static
+    {
+        $this->surface = $surface;
+
+        return $this;
+    }
+
+    public function getDurationLabel(): string
+    {
+        return $this->durationLabel;
+    }
+
+    public function setDurationLabel(string $durationLabel): static
+    {
+        $this->durationLabel = $durationLabel;
+
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getSafetyScore(): int
+    {
+        return $this->safetyScore;
+    }
+
+    public function setSafetyScore(int $safetyScore): static
+    {
+        $this->safetyScore = $safetyScore;
+
+        return $this;
+    }
+
+    public function getFunScore(): int
+    {
+        return $this->funScore;
+    }
+
+    public function setFunScore(int $funScore): static
+    {
+        $this->funScore = $funScore;
+
+        return $this;
+    }
+
+    public function getMatchScore(): int
+    {
+        return $this->matchScore;
+    }
+
+    public function setMatchScore(int $matchScore): static
+    {
+        $this->matchScore = $matchScore;
+
+        return $this;
+    }
+
+    public function getTag(): string
+    {
+        return $this->tag;
+    }
+
+    public function setTag(string $tag): static
+    {
+        $this->tag = $tag;
 
         return $this;
     }

@@ -33,6 +33,18 @@ class Tire
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $avgKmLifetime = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $imageKey = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $subtitle = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $tag = null;
+
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?string $colorToken = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -94,6 +106,54 @@ class Tire
     public function setAvgKmLifetime(?int $avgKmLifetime): static
     {
         $this->avgKmLifetime = $avgKmLifetime;
+
+        return $this;
+    }
+
+    public function getImageKey(): ?string
+    {
+        return $this->imageKey;
+    }
+
+    public function setImageKey(?string $imageKey): static
+    {
+        $this->imageKey = $imageKey;
+
+        return $this;
+    }
+
+    public function getSubtitle(): ?string
+    {
+        return $this->subtitle;
+    }
+
+    public function setSubtitle(?string $subtitle): static
+    {
+        $this->subtitle = $subtitle;
+
+        return $this;
+    }
+
+    public function getTag(): ?string
+    {
+        return $this->tag;
+    }
+
+    public function setTag(?string $tag): static
+    {
+        $this->tag = $tag;
+
+        return $this;
+    }
+
+    public function getColorToken(): ?string
+    {
+        return $this->colorToken;
+    }
+
+    public function setColorToken(?string $colorToken): static
+    {
+        $this->colorToken = $colorToken;
 
         return $this;
     }
