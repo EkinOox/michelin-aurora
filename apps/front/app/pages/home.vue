@@ -42,7 +42,7 @@ const rewardsProgress = computed(() => {
 </script>
 
 <template>
-  <div class="screen">
+  <div class="screen home-screen">
     <div class="screen-scroll">
       <div class="pad safe-top rise" style="padding-top: 40px; padding-bottom: 6px">
         <div class="between">
@@ -74,13 +74,13 @@ const rewardsProgress = computed(() => {
               </div>
               <span class="badge badge-lime"><span style="width: 6px; height: 6px; border-radius: 99px; background: var(--lime-600)" /> Connecté</span>
             </div>
-            <div class="row" style="justify-content: space-between; align-items: flex-end; margin-top: 14px">
-              <div>
+            <div class="row" style="justify-content: space-between; align-items: center; margin-top: 14px; gap: 12px">
+              <div style="flex: 1; min-width: 0">
                 <div class="eyebrow">Vélo actif</div>
                 <div class="h-md" style="margin-top: 4px">{{ activeBike?.name }}</div>
                 <div class="small" style="margin-top: 3px"><Icon name="leaf" :size="13" color="var(--lime-600)" style="vertical-align: -2px" /> {{ activeBike?.subtitle }}</div>
               </div>
-              <Photo :src="imageFor(activeBike?.image_key)" alt="Vélo actif" :radius="14" style="width: 84px; height: 64px; flex: 0 0 auto" />
+              <Photo :src="imageFor(activeBike?.image_key)" alt="Vélo actif" :radius="16" style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover" />
             </div>
             <div class="divider" style="margin: 15px 0" />
             <div class="row" style="gap: 6px">
@@ -181,3 +181,91 @@ const rewardsProgress = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* ── Desktop : thème navy Michelin ── */
+@media (min-width: 900px) {
+  .home-screen {
+    /* Override des variables CSS pour le thème sombre */
+    --ink:      #ffffff;
+    --ink-2:    rgba(255,255,255,.85);
+    --ink-3:    rgba(255,255,255,.55);
+    --mute:     rgba(255,255,255,.35);
+    --line:     rgba(255,255,255,.10);
+    --line-2:   rgba(255,255,255,.06);
+    --surface-2: rgba(255,255,255,.10);
+    --card:     rgba(255,255,255,.96);
+    --surface:  rgba(255,255,255,.96);
+
+    background:
+      radial-gradient(130% 55% at 50% -5%, #2a5db0 0%, #00205B 38%, #000C34 70%, #000818 100%);
+  }
+
+  /* Cards blanches qui ressortent sur le fond navy */
+  .home-screen :deep(.card),
+  .home-screen :deep(.card-lg) {
+    background: rgba(255,255,255,.96);
+    border-color: rgba(255,255,255,.18);
+    /* Réinitialise les variables pour l'intérieur des cards */
+    --ink:    #1A1A1A;
+    --ink-2:  #404040;
+    --ink-3:  #53565A;
+    --mute:   #999999;
+    --line:   #E5E5E5;
+    --line-2: #F2F2F2;
+    --surface-2: #F2F2F2;
+  }
+
+  /* Bouton icône (cloche) en dark glass */
+  .home-screen :deep(.iconbtn) {
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.20);
+    color: #fff;
+  }
+  .home-screen :deep(.iconbtn):hover {
+    background: rgba(255,255,255,.20);
+  }
+
+  /* Michelin logo en blanc */
+  .home-screen :deep(.michelin-logo-img) {
+    filter: brightness(0) invert(1);
+    opacity: .85;
+  }
+
+  /* Titres de section */
+  .home-screen :deep(.h-sm) { color: #fff; }
+  .home-screen :deep(.tiny) { color: rgba(255,255,255,.55); }
+
+  /* Badge "Connecté" reste vert */
+  .home-screen :deep(.badge-lime) {
+    background: rgba(132,189,0,.18);
+    color: #84BD00;
+  }
+
+  /* Liens "Voir tout" */
+  .home-screen :deep(a.small[style*="lime"]) {
+    color: var(--lime) !important;
+  }
+
+  /* Grille d'exploration : cards avec leur couleur propre */
+  .home-screen :deep(.card .small) {
+    color: var(--ink);
+  }
+}
+
+@media (display-mode: standalone) {
+  .home-screen {
+    /* Réinitialise tout en mode PWA — fond bleu-blanc Michelin */
+    --ink: #1A1A1A; --ink-2: #404040; --ink-3: #53565A;
+    --mute: #999999; --line: #E5E5E5; --line-2: #F2F2F2;
+    --surface-2: #F2F2F2; --card: #FFFFFF; --surface: #FFFFFF;
+    color: var(--ink);
+    background: radial-gradient(140% 80% at 50% -10%, #D8E4F5 0%, #EEF2FA 40%, #E8EDF8 100%);
+  }
+  .home-screen :deep(.card),
+  .home-screen :deep(.card-lg) {
+    background: #FFFFFF;
+    border-color: rgba(210,222,240,.7);
+  }
+}
+</style>

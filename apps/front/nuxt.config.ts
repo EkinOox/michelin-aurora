@@ -1,3 +1,21 @@
+import { mkdirSync, writeFileSync, existsSync } from 'fs'
+import { resolve } from 'path'
+
+// Pre-create the PWA dev service-worker stub so Nitro never hits ENOENT on
+// first cold-start (the PWA module generates the real file asynchronously,
+// but requests can arrive before it's ready).
+if (process.env.NODE_ENV !== 'production') {
+  const swDir = resolve('.nuxt/dev-sw-dist')
+  const swFile = `${swDir}/sw.js`
+  if (!existsSync(swFile)) {
+    mkdirSync(swDir, { recursive: true })
+    writeFileSync(
+      swFile,
+      `self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',()=>clients.claim());self.addEventListener('fetch',()=>{});`,
+    )
+  }
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },

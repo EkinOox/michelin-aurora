@@ -5,7 +5,7 @@ const showTab = computed(() => Boolean(route.meta.tabbar))
 
 <template>
   <div class="aurora-shell">
-    <div class="aurora-app">
+    <div :class="['aurora-app', { 'has-sidebar': showTab }]">
       <slot />
       <TabBar v-if="showTab" />
       <Toast />
