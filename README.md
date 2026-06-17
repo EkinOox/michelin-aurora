@@ -164,8 +164,9 @@ Copier `apps/front/.env.example` → `apps/front/.env` pour le dev local.
 
 ## Déploiement (prod)
 
-Le projet tourne sur `167.233.142.20` (HTTP, port 80) via un reverse proxy nginx
-qui route `/api/*` vers le back Symfony et le reste vers le front Nuxt.
+Le projet est servi sur **https://michelin-aurora.duckdns.org** (HTTPS, IP
+`167.233.142.20`) via **Caddy**, qui gère le certificat Let's Encrypt
+automatiquement et route `/api/*` vers le back Symfony, le reste vers le front Nuxt.
 
 ### Pipeline automatique
 À chaque push sur `main`, GitHub Actions (`cd.yml`) :
@@ -177,9 +178,13 @@ qui route `/api/*` vers le back Symfony et le reste vers le front Nuxt.
 1. Installer Docker Engine + plugin compose.
 2. `mkdir -p /opt/michelin-aurora` puis y créer `.env.prod`
    (copier `deploy/.env.prod.example`, renseigner les vrais secrets).
-   `NUXT_PUBLIC_API_BASE=http://167.233.142.20`.
+   `NUXT_PUBLIC_API_BASE=https://michelin-aurora.duckdns.org`.
 3. Générer une clé SSH dédiée, ajouter la clé publique aux `authorized_keys`
    du serveur.
+4. DNS : faire pointer le domaine (DuckDNS) vers l'IP du serveur, en
+   enregistrement **A (IPv4) uniquement** — pas d'AAAA/IPv6 (Docker n'expose
+   pas l'IPv6, sinon la validation Let's Encrypt échoue). Ports **80 et 443**
+   ouverts.
 
 ### Secrets GitHub à configurer
 `SSH_HOST` = `167.233.142.20`, `SSH_USER` = `root`, `SSH_KEY` = clé SSH privée.

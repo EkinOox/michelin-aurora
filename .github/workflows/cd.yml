@@ -85,7 +85,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "deploy/docker-compose.prod.yml,deploy/nginx/default.conf"
+          source: "deploy/docker-compose.prod.yml,deploy/Caddyfile"
           target: "/opt/michelin-aurora"
           strip_components: 1
 

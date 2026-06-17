@@ -1,0 +1,19 @@
+# Email pour les notifications Let's Encrypt (expiration, etc.)
+{
+	email melwinduquenne@gmail.com
+}
+
+michelin-aurora.duckdns.org {
+	# API Symfony : préfixe /api conservé. flush_interval -1 = pas de
+	# bufferisation (nécessaire pour le SSE /api/telemetry/stream).
+	handle /api/* {
+		reverse_proxy back:8080 {
+			flush_interval -1
+		}
+	}
+
+	# Tout le reste : front Nuxt (serveur Nitro).
+	handle {
+		reverse_proxy front:3000
+	}
+}
