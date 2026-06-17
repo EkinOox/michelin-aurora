@@ -2,10 +2,10 @@
 import * as THREE from 'three'
 
 const PRODUCTS = [
-  { name: 'Power Road',       cat: 'Route',  dot: '#FCE500', text: '#0a0a0a', desc: 'Asphalte · Aéro · Racing' },
-  { name: 'Power Gravel TLR', cat: 'Gravel', dot: '#84BD00', text: '#0a0a0a', desc: 'Mixte · TLR · Polyvalent' },
-  { name: 'Wild Enduro',      cat: 'VTT',    dot: '#d1d5db', text: '#111',    desc: 'Single Track · Grip Total' },
-  { name: 'E-Wild',           cat: 'VAE',    dot: '#27509B', text: '#fff',    desc: 'Assistance · Tout-terrain' },
+  { name: 'Power Road',       cat: 'Route',  dot: '#FCE500', text: '#0a0a0a', desc: 'Asphalte · Aéro · Racing',    spokes: 20 },
+  { name: 'Power Gravel TLR', cat: 'Gravel', dot: '#84BD00', text: '#0a0a0a', desc: 'Mixte · TLR · Polyvalent',    spokes: 32 },
+  { name: 'Wild Enduro',      cat: 'VTT',    dot: '#d1d5db', text: '#111',    desc: 'Single Track · Grip Total',   spokes: 32 },
+  { name: 'E-Wild',           cat: 'VAE',    dot: '#27509B', text: '#fff',    desc: 'Assistance · Tout-terrain',   spokes: 36 },
 ]
 
 const activeIdx = ref(0)
@@ -269,7 +269,7 @@ function buildWheel(T: typeof THREE, cfg: {
 // ─────────────────────────────────────────────
 const CONFIGS = [
   {
-    // Route — pneu étroit, jante carbone aéro, 20 rayons plats
+    // Route — 20 rayons plats (aéro) : valeur standard pour roues racing légères
     R: 2.40, tireT: 0.062, rimDepth: 0.52, S: 20, spokesW: 0.008,
     rubber: 0x0b0c1e, rubberRough: 0.36, rubberMetal: 0.14,
     rim: 0x080a16, rimRough: 0.12, rimMetal: 0.82,
@@ -277,24 +277,24 @@ const CONFIGS = [
     disc: false, bladed: true, tread: 'smooth' as const,
   },
   {
-    // Gravel — medium, rubber chaud, jante alloy mat
-    R: 2.35, tireT: 0.138, rimDepth: 0.28, S: 12, spokesW: 0.013,
+    // Gravel — 32 rayons ronds : robustesse polyvalente route/chemin
+    R: 2.35, tireT: 0.138, rimDepth: 0.28, S: 32, spokesW: 0.010,
     rubber: 0x130f08, rubberRough: 0.66, rubberMetal: 0.04,
     rim: 0x100d07, rimRough: 0.34, rimMetal: 0.52,
     stripe: 0x84bd00, hubColor: 0x1c1508, hubAccent: 0x84bd00,
     disc: false, tread: 'gravel' as const,
   },
   {
-    // VTT — fat, très mat, crampons agressifs, moyeu large
-    R: 2.20, tireT: 0.218, rimDepth: 0.18, S: 10, spokesW: 0.017,
+    // VTT — 32 rayons épais : résistance maximale sur single track
+    R: 2.20, tireT: 0.218, rimDepth: 0.18, S: 32, spokesW: 0.013,
     rubber: 0x181818, rubberRough: 0.80, rubberMetal: 0.02,
     rim: 0x121212, rimRough: 0.42, rimMetal: 0.48,
     stripe: 0xb4b8bf, hubColor: 0x181818, hubAccent: 0xb4b8bf,
     disc: false, tread: 'mtb' as const,
   },
   {
-    // VAE — medium, renforcé, damier dense, liseré bleu Michelin
-    R: 2.35, tireT: 0.108, rimDepth: 0.38, S: 14, spokesW: 0.013,
+    // VAE — 36 rayons : plus renforcé pour absorber le poids moteur+batterie
+    R: 2.35, tireT: 0.108, rimDepth: 0.38, S: 36, spokesW: 0.010,
     rubber: 0x0c0b1e, rubberRough: 0.56, rubberMetal: 0.07,
     rim: 0x090818, rimRough: 0.22, rimMetal: 0.70,
     stripe: 0x27509B, hubColor: 0x0c0b1e, hubAccent: 0x27509B,
@@ -413,6 +413,9 @@ onMounted(() => { requestAnimationFrame(() => { ready.value = true }) })
         </div>
         <div class="ts-name">Michelin {{ PRODUCTS[activeIdx].name }}</div>
         <div class="ts-desc">{{ PRODUCTS[activeIdx].desc }}</div>
+        <div class="ts-spokes">
+          <span class="ts-spokes-num">{{ PRODUCTS[activeIdx].spokes }}</span> rayons
+        </div>
         <div class="ts-dots" role="tablist">
           <span
             v-for="(p, i) in PRODUCTS" :key="i"
@@ -469,6 +472,13 @@ onMounted(() => { requestAnimationFrame(() => { ready.value = true }) })
 .ts-desc {
   font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   color: rgba(255,255,255,.55); text-shadow: 0 1px 6px rgba(0,0,0,.4); margin-top: 1px;
+}
+.ts-spokes {
+  font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  color: rgba(255,255,255,.42); margin-top: 2px;
+}
+.ts-spokes-num {
+  font-variant-numeric: tabular-nums; color: rgba(255,255,255,.75);
 }
 .ts-dots { display: flex; gap: 7px; align-items: center; margin-top: 6px; }
 .ts-dot {

@@ -10,7 +10,8 @@
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --reporter=line)",
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts:34 --reporter=line --headed)",
       "Bash(kill %1)",
-      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --grep \"login reussi\" --reporter=line)"
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --grep \"login reussi\" --reporter=line)",
+      "Bash(curl -sf http://localhost:3000)"
     ]
   }
 }
