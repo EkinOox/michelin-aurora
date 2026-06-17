@@ -3,8 +3,8 @@ export interface RouteDto {
   id: string
   name: string
   bike_type: string
-  distance_km: number
-  elevation_gain_m: number
+  distance_km: number | null
+  elevation_gain_m: number | null
   match_score: number
   safety_score: number
 }
@@ -31,10 +31,10 @@ const tagColor = computed(() => TAG_COLOR[props.route.bike_type] ?? 'var(--ink)'
         <span class="badge route-type-badge" :style="{ background: 'rgba(0,0,0,.06)', color: tagColor }">{{ typeLabel }}</span>
         <span class="route-match tiny" style="color: var(--lime-600); font-weight: 700">Match {{ route.match_score }}%</span>
       </div>
-      <div class="route-name h-sm" style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ route.name }}</div>
-      <div class="route-meta row" style="gap: 12px; margin-top: 3px; flex-wrap: nowrap">
-        <span class="tiny num" style="white-space: nowrap">{{ route.distance_km }} km</span>
-        <span class="tiny num" style="white-space: nowrap">↑ {{ route.elevation_gain_m }} m</span>
+      <div class="h-sm" style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ route.name }}</div>
+      <div class="row" style="gap: 12px; margin-top: 3px; flex-wrap: nowrap">
+        <span class="tiny num" style="white-space: nowrap">{{ route.distance_km != null ? route.distance_km + ' km' : '— km' }}</span>
+        <span class="tiny num" style="white-space: nowrap">↑ {{ route.elevation_gain_m != null ? route.elevation_gain_m + ' m' : '—' }}</span>
         <span class="tiny" style="white-space: nowrap"><Icon name="shield" :size="11" color="var(--green)" style="vertical-align: -1px" /> {{ route.safety_score }}</span>
       </div>
     </div>

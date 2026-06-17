@@ -10,6 +10,7 @@ export function useApiFetch<T, DefaultT = T>(path: string | (() => string), opts
   const url = typeof path === 'function' ? () => `${apiBase}${path()}` : () => `${apiBase}${path}`
 
   return useFetch(url, {
+    server: false,
     ...opts,
     headers: { ...authHeaders(), ...opts.headers },
   } as any) as unknown as AsyncData<T | DefaultT, unknown>

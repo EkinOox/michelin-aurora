@@ -26,6 +26,8 @@ const { data: tires } = await useApiFetch<TireDto[]>('/api/tires', { key: 'home-
 const { data: rewards } = await useApiFetch<RewardsDto>('/api/rewards', { key: 'home-rewards' })
 const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'home-routes', default: () => [] })
 
+const { frontStr, rearStr, isRain } = usePressure()
+
 const initials = computed(() => {
   const n = profile.value?.name ?? ''
   return n.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'TG'
@@ -97,7 +99,7 @@ const rewardsProgress = computed(() => {
               </div>
               <div class="bike-stat" style="flex: 1; min-width: 0">
                 <div class="row" style="gap: 5px; color: var(--ink-3)"><Icon name="gauge" :size="14" color="var(--lime-600)" /><span class="tiny">Pression Av</span></div>
-                <div class="num bike-stat-val" style="font-size: 20px; font-weight: 700; margin-top: 3px">2,6<span class="bike-stat-unit" style="font-size: 12px; color: var(--mute); margin-left: 2px">bar</span></div>
+                <div class="num" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ frontStr }}<span style="font-size: 12px; color: var(--mute); margin-left: 2px">bar</span></div>
               </div>
               <div class="bike-stat" style="flex: 1; min-width: 0">
                 <div class="row" style="gap: 5px; color: var(--ink-3)"><Icon name="recycle" :size="14" /><span class="tiny">Usure</span></div>
@@ -119,10 +121,11 @@ const rewardsProgress = computed(() => {
           </div>
           <div>
             <div class="eyebrow">Pression idéale</div>
-            <div class="num" style="font-size: 24px; font-weight: 800; margin-top: 2px">2,6<span style="font-size: 12px; color: var(--mute)"> bar</span></div>
+            <div class="num" style="font-size: 24px; font-weight: 800; margin-top: 2px">{{ rearStr }}<span style="font-size: 12px; color: var(--mute)"> bar</span></div>
           </div>
           <div class="row" style="gap: 5px">
-            <span class="badge badge-blue"><Icon name="cloud" :size="12" /> Pluie −10%</span>
+            <span v-if="isRain" class="badge badge-blue"><Icon name="cloud" :size="12" /> Pluie −10%</span>
+            <span v-else class="badge badge-lime"><Icon name="sun" :size="12" /> Sec</span>
           </div>
         </NuxtLink>
 
