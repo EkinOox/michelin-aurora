@@ -96,6 +96,35 @@ jobs:
           NUXT_PUBLIC_API_BASE: http://localhost:8081
           NUXT_API_BASE_INTERNAL: http://back:8080
 
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Start built server
+        run: node .output/server/index.mjs &
+        env:
+          NUXT_PUBLIC_API_BASE: http://localhost:8081
+
+      - name: Wait for server to be ready
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000 > /dev/null && echo "Server ready" && exit 0
+            sleep 1
+          done
+          echo "Server did not start in 30s" && exit 1
+
+      - name: E2E tests (Playwright)
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/front/test-results/
+          retention-days: 7
+
   # ── Docker : vérification que les images buildent ──────────────────────────
   docker-build:
     name: Docker — build check

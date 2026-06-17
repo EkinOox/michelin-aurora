@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test test/e2e/auth.spec.ts:33 --reporter=line --headed)",
+      "Bash(npx nuxt *)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/navigation.spec.ts --reporter=line)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test --reporter=line)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/home.spec.ts test/e2e/auth.spec.ts --reporter=line)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/home.spec.ts --reporter=line)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --reporter=line)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts:34 --reporter=line --headed)",
+      "Bash(kill %1)",
+      "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --grep \"login reussi\" --reporter=line)"
+    ]
+  }
+}
