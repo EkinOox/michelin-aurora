@@ -10,6 +10,7 @@ withDefaults(defineProps<{
 <template>
   <img
     src="/michelin-logo.png" alt="Michelin"
-    :style="{ height: `${height}px`, width: 'auto', display: 'block', ...style }"
+    class="michelin-logo-img"
+    :style="{ height: `${height}px`, width: 'auto', display: 'block', flexShrink: 0, alignSelf: 'flex-start', ...style }"
   >
 </template>

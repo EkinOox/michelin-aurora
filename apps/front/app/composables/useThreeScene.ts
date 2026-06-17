@@ -24,57 +24,68 @@ export function useThreeScene(
     const container = el.value
     if (!container) return
 
-    const w = container.clientWidth || 320
-    const h = container.clientHeight || 320
+    // Différer la création Three.js au temps mort du navigateur —
+    // le premier paint et les interactions ne sont plus bloqués.
+    const scheduleIdle = (window as any).requestIdleCallback
+      ?? ((fn: () => void) => setTimeout(fn, 32))
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(w, h)
-    renderer.outputColorSpace = THREE.SRGBColorSpace
-    container.appendChild(renderer.domElement)
-
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100)
-
-    let raf = 0
     let mounted = true
+    let raf = 0
 
-    const api = setup({ THREE, scene, camera, renderer, w, h }) || {}
-
-    const tick = (t: number) => {
+    scheduleIdle(() => {
       if (!mounted) return
-      api.update?.(t * 0.001)
-      renderer.render(scene, camera)
+
+      const w = container.clientWidth || 320
+      const h = container.clientHeight || 320
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      renderer.setSize(w, h)
+      renderer.outputColorSpace = THREE.SRGBColorSpace
+      container.appendChild(renderer.domElement)
+
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100)
+
+      const api = setup({ THREE, scene, camera, renderer, w, h }) || {}
+
+      const tick = (t: number) => {
+        if (!mounted) return
+        api.update?.(t * 0.001)
+        renderer.render(scene, camera)
+        raf = requestAnimationFrame(tick)
+      }
       raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
 
-    const onResize = () => {
-      const nw = container.clientWidth
-      const nh = container.clientHeight
-      if (!nw || !nh) return
-      camera.aspect = nw / nh
-      camera.updateProjectionMatrix()
-      renderer.setSize(nw, nh)
-    }
-    const ro = new ResizeObserver(onResize)
-    ro.observe(container)
+      const onResize = () => {
+        const nw = container.clientWidth
+        const nh = container.clientHeight
+        if (!nw || !nh) return
+        camera.aspect = nw / nh
+        camera.updateProjectionMatrix()
+        renderer.setSize(nw, nh)
+      }
+      const ro = new ResizeObserver(onResize)
+      ro.observe(container)
 
-    onUnmounted(() => {
-      mounted = false
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-      api.dispose?.()
-      scene.traverse((o: any) => {
-        o.geometry?.dispose?.()
-        if (o.material) {
-          const mats = Array.isArray(o.material) ? o.material : [o.material]
-          mats.forEach((m: any) => m.dispose?.())
-        }
+      onUnmounted(() => {
+        mounted = false
+        cancelAnimationFrame(raf)
+        ro.disconnect()
+        api.dispose?.()
+        scene.traverse((o: any) => {
+          o.geometry?.dispose?.()
+          if (o.material) {
+            const mats = Array.isArray(o.material) ? o.material : [o.material]
+            mats.forEach((m: any) => m.dispose?.())
+          }
+        })
+        renderer.dispose()
+        if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
       })
-      renderer.dispose()
-      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
     })
+
+    onUnmounted(() => { mounted = false })
   })
 
   return el
