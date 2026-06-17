@@ -56,9 +56,9 @@ class ProfileController
 
         $profile = $this->cyclistProfileRepository->findOneBy(['user' => $user]) ?? new CyclistProfile();
         $profile->setUser($user);
-        $profile->setBikeType(BikeType::from($payload['bike_type'] ?? 'gravel'));
-        $profile->setRiderLevel(RiderLevel::from($payload['rider_level'] ?? 'expert'));
-        $profile->setUsageType(UsageType::from($payload['usage_type'] ?? 'sport'));
+        $profile->setBikeType(BikeType::tryFrom($payload['bike_type'] ?? '') ?? BikeType::Gravel);
+        $profile->setRiderLevel(RiderLevel::tryFrom($payload['rider_level'] ?? '') ?? RiderLevel::Expert);
+        $profile->setUsageType(UsageType::tryFrom($payload['usage_type'] ?? '') ?? UsageType::Sport);
         $profile->setPreferences($payload['preferences'] ?? null);
 
         $this->entityManager->persist($profile);
