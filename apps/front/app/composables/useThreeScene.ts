@@ -24,13 +24,12 @@ export function useThreeScene(
     const container = el.value
     if (!container) return
 
-    // Différer la création Three.js au temps mort du navigateur —
-    // le premier paint et les interactions ne sont plus bloqués.
     const scheduleIdle = (window as any).requestIdleCallback
       ?? ((fn: () => void) => setTimeout(fn, 32))
 
     let mounted = true
     let raf = 0
+    let cleanupFn: (() => void) | null = null
 
     scheduleIdle(() => {
       if (!mounted) return
@@ -68,8 +67,7 @@ export function useThreeScene(
       const ro = new ResizeObserver(onResize)
       ro.observe(container)
 
-      onUnmounted(() => {
-        mounted = false
+      cleanupFn = () => {
         cancelAnimationFrame(raf)
         ro.disconnect()
         api.dispose?.()
@@ -81,11 +79,16 @@ export function useThreeScene(
           }
         })
         renderer.dispose()
-        if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
-      })
+        if (renderer.domElement.parentNode)
+          renderer.domElement.parentNode.removeChild(renderer.domElement)
+      }
     })
 
-    onUnmounted(() => { mounted = false })
+    onUnmounted(() => {
+      mounted = false
+      cancelAnimationFrame(raf)
+      cleanupFn?.()
+    })
   })
 
   return el
