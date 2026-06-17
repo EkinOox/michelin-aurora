@@ -66,7 +66,7 @@ const rewardsProgress = computed(() => {
       <div class="pad rise d1">
         <div class="card-lg" style="overflow: hidden; position: relative">
           <div class="mapbg" style="position: absolute; inset: 0; opacity: .5" />
-          <div style="position: relative; padding: 18px 18px 16px">
+          <div class="bike-inner" style="position: relative; padding: 18px 18px 16px">
             <div class="between">
               <div class="row" style="gap: 7px">
                 <Icon name="loc" :size="15" color="var(--ink-3)" />
@@ -74,30 +74,30 @@ const rewardsProgress = computed(() => {
               </div>
               <span class="badge badge-lime"><span style="width: 6px; height: 6px; border-radius: 99px; background: var(--lime-600)" /> Connecté</span>
             </div>
-            <div class="row" style="justify-content: space-between; align-items: center; margin-top: 14px; gap: 12px">
-              <div style="flex: 1; min-width: 0">
+            <div class="bike-main row" style="justify-content: space-between; align-items: center; margin-top: 14px; gap: 12px">
+              <div class="bike-info" style="flex: 1; min-width: 0">
                 <div class="eyebrow">Vélo actif</div>
                 <div class="h-md" style="margin-top: 4px">{{ activeBike?.name }}</div>
                 <div class="small" style="margin-top: 3px"><Icon name="leaf" :size="13" color="var(--lime-600)" style="vertical-align: -2px" /> {{ activeBike?.subtitle }}</div>
               </div>
-              <Photo :src="imageFor(activeBike?.image_key)" alt="Vélo actif" :radius="16" style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover" />
+              <Photo class="bike-photo" :src="imageFor(activeBike?.image_key)" alt="Vélo actif" :radius="16" style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover" />
             </div>
-            <div class="divider" style="margin: 15px 0" />
-            <div class="row" style="gap: 6px">
-              <div style="flex: 1; min-width: 0">
+            <div class="divider bike-divider" style="margin: 15px 0" />
+            <div class="bike-stats row" style="gap: 6px">
+              <div class="bike-stat" style="flex: 1; min-width: 0">
                 <div class="row" style="gap: 5px; color: var(--ink-3)"><Icon name="route" :size="14" /><span class="tiny">Durée vie</span></div>
-                <div class="num" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ activeBike?.avg_km_lifetime }}<span style="font-size: 12px; color: var(--mute); margin-left: 2px">km</span></div>
+                <div class="num bike-stat-val" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ activeBike?.avg_km_lifetime }}<span class="bike-stat-unit" style="font-size: 12px; color: var(--mute); margin-left: 2px">km</span></div>
               </div>
-              <div style="flex: 1; min-width: 0">
+              <div class="bike-stat" style="flex: 1; min-width: 0">
                 <div class="row" style="gap: 5px; color: var(--ink-3)"><Icon name="gauge" :size="14" color="var(--lime-600)" /><span class="tiny">Pression Av</span></div>
-                <div class="num" style="font-size: 20px; font-weight: 700; margin-top: 3px">2,6<span style="font-size: 12px; color: var(--mute); margin-left: 2px">bar</span></div>
+                <div class="num bike-stat-val" style="font-size: 20px; font-weight: 700; margin-top: 3px">2,6<span class="bike-stat-unit" style="font-size: 12px; color: var(--mute); margin-left: 2px">bar</span></div>
               </div>
-              <div style="flex: 1; min-width: 0">
+              <div class="bike-stat" style="flex: 1; min-width: 0">
                 <div class="row" style="gap: 5px; color: var(--ink-3)"><Icon name="recycle" :size="14" /><span class="tiny">Usure</span></div>
-                <div class="num" style="font-size: 20px; font-weight: 700; margin-top: 3px">18<span style="font-size: 12px; color: var(--mute); margin-left: 2px">%</span></div>
+                <div class="num bike-stat-val" style="font-size: 20px; font-weight: 700; margin-top: 3px">18<span class="bike-stat-unit" style="font-size: 12px; color: var(--mute); margin-left: 2px">%</span></div>
               </div>
             </div>
-            <NuxtLink to="/ride" class="btn btn-blue btn-block" style="margin-top: 16px; height: 50px">
+            <NuxtLink to="/ride" class="btn btn-blue btn-block ride-btn" style="margin-top: 16px; height: 50px">
               <Icon name="play" :size="17" /> Démarrer une sortie
             </NuxtLink>
           </div>
@@ -133,33 +133,45 @@ const rewardsProgress = computed(() => {
       </div>
 
       <div class="pad rise d3" style="margin-top: 14px">
-        <div class="between" style="margin-bottom: 10px">
+        <div class="between" style="margin-bottom: 12px">
           <span class="h-sm">Explorer</span>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 10px">
-          <NuxtLink to="/routes" class="card" style="padding: 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
-            <div style="width: 38px; height: 38px; border-radius: 11px; background: var(--lime); display: flex; align-items: center; justify-content: center">
-              <Icon name="route" :size="20" color="#fff" />
+        <div class="explore-grid">
+          <NuxtLink to="/routes" class="explore-card explore-routes">
+            <div class="explore-icon"><Icon name="route" :size="24" color="#fff" /></div>
+            <div class="explore-body">
+              <span class="explore-title">Routes</span>
+              <span class="explore-sub">Itinéraires sur-mesure</span>
             </div>
-            <span class="small" style="color: var(--ink); font-weight: 600">Routes</span>
+            <div class="explore-deco explore-deco-a" aria-hidden="true" />
+            <div class="explore-deco explore-deco-b" aria-hidden="true" />
           </NuxtLink>
-          <NuxtLink to="/events" class="card" style="padding: 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
-            <div style="width: 38px; height: 38px; border-radius: 11px; background: var(--blue); display: flex; align-items: center; justify-content: center">
-              <Icon name="cal" :size="20" color="#fff" />
+          <NuxtLink to="/events" class="explore-card explore-events">
+            <div class="explore-icon"><Icon name="cal" :size="24" color="#fff" /></div>
+            <div class="explore-body">
+              <span class="explore-title">Events</span>
+              <span class="explore-sub">Sorties &amp; Compétitions</span>
             </div>
-            <span class="small" style="color: var(--ink); font-weight: 600">Events</span>
+            <div class="explore-deco explore-deco-a" aria-hidden="true" />
+            <div class="explore-deco explore-deco-b" aria-hidden="true" />
           </NuxtLink>
-          <NuxtLink to="/community" class="card" style="padding: 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
-            <div style="width: 38px; height: 38px; border-radius: 11px; background: #582C83; display: flex; align-items: center; justify-content: center">
-              <Icon name="users" :size="20" color="#fff" />
+          <NuxtLink to="/community" class="explore-card explore-riders">
+            <div class="explore-icon"><Icon name="users" :size="24" color="#fff" /></div>
+            <div class="explore-body">
+              <span class="explore-title">Riders</span>
+              <span class="explore-sub">La Communauté</span>
             </div>
-            <span class="small" style="color: var(--ink); font-weight: 600">Riders</span>
+            <div class="explore-deco explore-deco-a" aria-hidden="true" />
+            <div class="explore-deco explore-deco-b" aria-hidden="true" />
           </NuxtLink>
-          <NuxtLink to="/store" class="card" style="padding: 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
-            <div style="width: 38px; height: 38px; border-radius: 11px; background: var(--ink); display: flex; align-items: center; justify-content: center">
-              <Icon name="cart" :size="20" color="#fff" />
+          <NuxtLink to="/store" class="explore-card explore-store">
+            <div class="explore-icon"><Icon name="cart" :size="24" color="#fff" /></div>
+            <div class="explore-body">
+              <span class="explore-title">Store</span>
+              <span class="explore-sub">Boutique Michelin</span>
             </div>
-            <span class="small" style="color: var(--ink); font-weight: 600">Store</span>
+            <div class="explore-deco explore-deco-a" aria-hidden="true" />
+            <div class="explore-deco explore-deco-b" aria-hidden="true" />
           </NuxtLink>
         </div>
       </div>
@@ -232,7 +244,7 @@ const rewardsProgress = computed(() => {
     opacity: .85;
   }
 
-  /* Titres de section */
+  /* Titres de section (hors cards) */
   .home-screen :deep(.h-sm) { color: #fff; }
   .home-screen :deep(.tiny) { color: rgba(255,255,255,.55); }
 
@@ -247,10 +259,147 @@ const rewardsProgress = computed(() => {
     color: var(--lime) !important;
   }
 
-  /* Grille d'exploration : cards avec leur couleur propre */
-  .home-screen :deep(.card .small) {
-    color: var(--ink);
+  /* Cards : restauration des couleurs sombres pour tous les éléments typographiques.
+     Les règles générales ci-dessus colorient tout en blanc (thème navy),
+     ce qui rend le texte illisible à l'intérieur des cards blanches. */
+  .home-screen :deep(.card .h-sm),
+  .home-screen :deep(.card-lg .h-sm)    { color: var(--ink); }
+  .home-screen :deep(.card .tiny),
+  .home-screen :deep(.card-lg .tiny)    { color: var(--mute); }
+  .home-screen :deep(.card .small),
+  .home-screen :deep(.card-lg .small)   { color: var(--ink-3); }
+  .home-screen :deep(.card .eyebrow),
+  .home-screen :deep(.card-lg .eyebrow) { color: var(--ink-3); }
+  .home-screen :deep(.card .num),
+  .home-screen :deep(.card-lg .num)     { color: var(--ink); }
+
+  /* ── Card vélo actif : layout desktop ────────────────────────── */
+  .bike-inner { padding: 24px 28px 22px; }
+
+  /* Photo : plus grande */
+  .home-screen :deep(.bike-photo) {
+    width: 220px !important;
+    height: 162px !important;
+    border-radius: 20px !important;
   }
+
+  /* Infos vélo : typographie plus aérée */
+  .bike-info .eyebrow { font-size: 12px; letter-spacing: .2em; }
+  .bike-info .h-md    { font-size: 26px; margin-top: 6px; }
+  .bike-info .small   { margin-top: 5px; font-size: 14px; }
+
+  /* Statistiques : séparateurs verticaux + valeurs plus grosses */
+  .bike-divider { margin: 18px 0; }
+  .bike-stats   { gap: 0; }
+  .bike-stat    { padding: 0 24px; border-right: 1px solid var(--line); }
+  .bike-stat:first-child { padding-left: 0; }
+  .bike-stat:last-child  { border-right: none; }
+  .bike-stat-val  { font-size: 28px !important; font-weight: 800 !important; margin-top: 5px !important; }
+  .bike-stat-unit { font-size: 14px !important; }
+
+  /* Bouton "Démarrer une sortie" : caché sur desktop */
+  .ride-btn { display: none; }
+}
+
+/* ── Section Explorer ─────────────────────────────────────────────────── */
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.explore-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 120px;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .18), 0 1px 0 rgba(255,255,255,.08) inset;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease;
+}
+.explore-card:active { transform: scale(.97); }
+
+/* Couleurs par section */
+.explore-routes { background: linear-gradient(145deg, #72C93A 0%, #4A8A1C 100%); }
+.explore-events { background: linear-gradient(145deg, #3F78E0 0%, #1D3FAD 100%); }
+.explore-riders { background: linear-gradient(145deg, #8B4EC4 0%, #4A1E82 100%); }
+.explore-store  { background: linear-gradient(145deg, #353545 0%, #111120 100%); }
+
+/* Icône glassmorphism */
+.explore-icon {
+  width: 44px; height: 44px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .22);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Texte */
+.explore-body {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.explore-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.explore-sub {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .62);
+  letter-spacing: .01em;
+  line-height: 1.3;
+}
+
+/* Cercles décoratifs */
+.explore-deco {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(255, 255, 255, .07);
+}
+.explore-deco-a { width: 110px; height: 110px; right: -28px; top: -28px; }
+.explore-deco-b { width: 60px;  height: 60px;  right:  14px; top:  30px; background: rgba(255,255,255,.05); }
+
+/* Desktop : cartes plus hautes avec hover lift */
+@media (min-width: 900px) {
+  .explore-grid { gap: 14px; }
+
+  .explore-card {
+    min-height: 156px;
+    padding: 20px 20px 18px;
+    border-radius: 24px;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, .22), 0 1px 0 rgba(255,255,255,.08) inset;
+  }
+  .explore-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .28), 0 1px 0 rgba(255,255,255,.1) inset;
+  }
+
+  .explore-icon {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+  }
+
+  .explore-body   { padding-top: 18px; }
+  .explore-title  { font-size: 17px; }
+  .explore-sub    { font-size: 11.5px; }
+
+  .explore-deco-a { width: 140px; height: 140px; right: -36px; top: -36px; }
+  .explore-deco-b { width: 80px;  height: 80px;  right:  18px; top:  38px; }
 }
 
 @media (display-mode: standalone) {

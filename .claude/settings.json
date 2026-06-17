@@ -11,7 +11,17 @@
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts:34 --reporter=line --headed)",
       "Bash(kill %1)",
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test test/e2e/auth.spec.ts --grep \"login reussi\" --reporter=line)",
-      "Bash(curl -sf http://localhost:3000)"
+      "Bash(curl -sf http://localhost:3000)",
+      "Bash(curl -sf http://localhost:3000/home -o /dev/null)",
+      "Bash(node -e ' *)",
+      "Bash(rm -f \"/Users/ekinoox/Documents/GitHub/michelin-aurora/.git/refs/remotes/origin/HEAD 2\" *)",
+      "Bash(git -C /Users/ekinoox/Documents/GitHub/michelin-aurora fetch --dry-run)",
+      "Bash(rm /Users/ekinoox/Documents/GitHub/michelin-aurora/.git/index.lock && echo \"Lock supprimé\")",
+      "Bash(git -C /Users/ekinoox/Documents/GitHub/michelin-aurora status)"
+    ],
+    "additionalDirectories": [
+      "/Users/ekinoox/Documents/GitHub/michelin-aurora/.git/refs/remotes/origin",
+      "/Users/ekinoox/Documents/GitHub/michelin-aurora/.git"
     ]
   }
 }

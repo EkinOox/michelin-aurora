@@ -509,12 +509,8 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 
   .tab-label{ font-size: 14px; font-weight: 600; }
 
-  /* Bouton play inline dans la nav */
-  .tab-center{
-    margin: 8px auto;
-    width: 52px; height: 52px;
-    flex: 0 0 auto;
-  }
+  /* Bouton play inline dans la nav : caché sur desktop (personne ne fait du vélo sur PC) */
+  .tab-center{ display: none; }
 
   /* Footer bas de sidebar */
   .tb-footer{
@@ -592,7 +588,7 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   .tab.is-active{ color: #fff; background: transparent; }
   .tab .dot{ display: block; }
   .tab-label{ font-size: 10px; }
-  .tab-center{ margin: -26px auto 0; width: 62px; height: 62px; }
+  .tab-center{ display: flex; margin: -26px auto 0; width: 62px; height: 62px; }
   .safe-top{ padding-top: max(22px, env(safe-area-inset-top)); }
   .aurora-app.has-sidebar > .screen .screen-scroll{ padding-bottom: 108px; }
 }
