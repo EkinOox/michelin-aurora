@@ -5,9 +5,10 @@ const cur = computed(() => {
   const p = route.path
   if (p === '/home') return 'home'
   if (p.startsWith('/routes')) return 'routes'
+  if (p.startsWith('/community')) return 'community'
   if (p === '/rewards') return 'rewards'
   if (p === '/profile') return 'profile'
-  if (p === '/events' || p === '/community' || p === '/store') return 'home'
+  if (p === '/events' || p === '/store') return 'home'
   return ''
 })
 
@@ -39,10 +40,10 @@ function isActive(key: string) {
       <NuxtLink to="/ride" class="tab-center" aria-label="Démarrer une sortie">
         <Icon name="play" :size="24" color="#fff" />
       </NuxtLink>
-      <NuxtLink to="/rewards" :class="['tab', isActive('rewards') ? 'is-active' : '']">
+      <NuxtLink to="/community" :class="['tab', isActive('community') ? 'is-active' : '']">
         <span class="dot" />
-        <Icon name="gift" :size="22" :stroke="isActive('rewards') ? 2.2 : 2" />
-        <span class="tab-label">Rewards</span>
+        <Icon name="users" :size="22" :stroke="isActive('community') ? 2.2 : 2" />
+        <span class="tab-label">Riders</span>
       </NuxtLink>
       <NuxtLink to="/profile" :class="['tab', isActive('profile') ? 'is-active' : '']">
         <span class="dot" />

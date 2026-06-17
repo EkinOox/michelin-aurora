@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\TelemetrySession;
 use App\Repository\RideRepository;
 use App\Repository\TelemetrySessionRepository;
@@ -40,9 +41,29 @@ class TelemetryController
         $session->setPressureFrontBar((float) ($payload['pressure_front_bar'] ?? 0));
         $session->setPressureRearBar((float) ($payload['pressure_rear_bar'] ?? 0));
         $session->setSpeedKmh((float) ($payload['speed_kmh'] ?? 0));
-        $session->setAlertTriggered((bool) ($payload['alert_triggered'] ?? false));
+        $alertTriggered = (bool) ($payload['alert_triggered'] ?? false);
+        $session->setAlertTriggered($alertTriggered);
 
         $this->entityManager->persist($session);
+
+        if ($alertTriggered) {
+            $pressure = (float) ($payload['pressure_rear_bar'] ?? $payload['pressure_front_bar'] ?? 0);
+            $notif = new Notification();
+            $notif->setUser($ride->getUser());
+            $notif->setType('tire_alert');
+            $notif->setTitle('Alerte pression pneu');
+            $notif->setBody(sprintf(
+                'Chute de pression détectée (%.1f bar) pendant ta sortie. Vérifie tes pneus.',
+                $pressure
+            ));
+            $notif->setData([
+                'ride_id'       => $ride->getId()->toString(),
+                'pressure_bar'  => $pressure,
+                'session_at'    => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            ]);
+            $this->entityManager->persist($notif);
+        }
+
         $this->entityManager->flush();
 
         return new JsonResponse(['status' => 'created'], 201);

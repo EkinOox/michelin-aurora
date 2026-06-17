@@ -11,6 +11,8 @@ const showTab = computed(() => Boolean(route.meta.tabbar))
       <Toast />
       <RetailerSheet />
       <ArticleSheet />
+      <NotificationsSheet />
+      <RiderSheet />
     </div>
   </div>
 </template>

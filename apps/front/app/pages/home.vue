@@ -2,6 +2,7 @@
 import { imageFor } from '~/data/images'
 import type { RouteDto } from '~/components/RouteRow.vue'
 
+
 definePageMeta({ tabbar: true })
 
 interface ProfileDto {
@@ -9,7 +10,7 @@ interface ProfileDto {
   city: string
   rewards_level: string
   total_points: number
-  profile: { bike_type: string } | null
+  profile: { bike_type: string, bike_photo_url: string | null } | null
 }
 interface TireDto {
   id: string
@@ -80,7 +81,13 @@ const rewardsProgress = computed(() => {
                 <div class="h-md" style="margin-top: 4px">{{ activeBike?.name }}</div>
                 <div class="small" style="margin-top: 3px"><Icon name="leaf" :size="13" color="var(--lime-600)" style="vertical-align: -2px" /> {{ activeBike?.subtitle }}</div>
               </div>
-              <Photo class="bike-photo" :src="imageFor(activeBike?.image_key)" alt="Vélo actif" :radius="16" style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover" />
+              <Photo
+                class="bike-photo"
+                :src="profile?.profile?.bike_photo_url || imageFor(activeBike?.image_key)"
+                alt="Vélo actif"
+                :radius="16"
+                style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover"
+              />
             </div>
             <div class="divider bike-divider" style="margin: 15px 0" />
             <div class="bike-stats row" style="gap: 6px">

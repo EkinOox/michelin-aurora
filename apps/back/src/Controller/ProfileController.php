@@ -42,6 +42,7 @@ class ProfileController
                 'rider_level' => $profile->getRiderLevel()->value,
                 'usage_type' => $profile->getUsageType()->value,
                 'preferences' => $profile->getPreferences(),
+                'bike_photo_url' => $profile->getBikePhotoUrl(),
             ] : null,
         ]);
     }
@@ -60,6 +61,9 @@ class ProfileController
         $profile->setRiderLevel(RiderLevel::tryFrom($payload['rider_level'] ?? '') ?? RiderLevel::Expert);
         $profile->setUsageType(UsageType::tryFrom($payload['usage_type'] ?? '') ?? UsageType::Sport);
         $profile->setPreferences($payload['preferences'] ?? null);
+        if (array_key_exists('bike_photo_url', $payload)) {
+            $profile->setBikePhotoUrl($payload['bike_photo_url'] ?: null);
+        }
 
         $this->entityManager->persist($profile);
         $this->entityManager->flush();

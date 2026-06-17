@@ -36,6 +36,9 @@ class CyclistProfile
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $preferences = null;
 
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $bikePhotoUrl = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -100,4 +103,7 @@ class CyclistProfile
 
         return $this;
     }
+
+    public function getBikePhotoUrl(): ?string { return $this->bikePhotoUrl; }
+    public function setBikePhotoUrl(?string $url): static { $this->bikePhotoUrl = $url; return $this; }
 }
