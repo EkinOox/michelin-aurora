@@ -6,6 +6,7 @@ export interface ArticleItem {
   read: string
   img: string
   body: string
+  url?: string | null
 }
 
 export function useArticleSheet() {

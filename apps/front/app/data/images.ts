@@ -12,5 +12,6 @@ export const IMAGES: Record<string, string> = {
 
 export function imageFor(key?: string | null): string {
   if (!key) return IMAGES.bikeWhite
+  if (key.startsWith('http://') || key.startsWith('https://')) return key
   return IMAGES[key] ?? IMAGES.bikeWhite
 }

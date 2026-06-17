@@ -3,7 +3,7 @@ const { item, close } = useArticleSheet()
 
 function readMore() {
   try {
-    window.open('https://www.michelin.fr', '_blank', 'noopener')
+    window.open(item.value?.url || 'https://www.michelin.fr', '_blank', 'noopener')
   } catch {
     // ignore popup blockers
   }
@@ -22,7 +22,7 @@ function readMore() {
       <div class="h-md" style="margin-top: 12px">{{ item.title }}</div>
       <div class="body" style="margin-top: 12px">{{ item.body }}</div>
       <button class="btn btn-blue btn-block" style="margin-top: 20px; height: 50px" @click="readMore">
-        Lire sur michelin.fr <Icon name="arrow" :size="18" />
+        {{ item.url ? "Lire l'article original" : 'Lire sur michelin.fr' }} <Icon name="arrow" :size="18" />
       </button>
     </div>
   </Sheet>
