@@ -251,7 +251,7 @@ function logout() { logoutAuth(); router.push('/') }
           </NuxtLink>
           <button class="btn btn-ghost btn-block" style="height: 44px; font-size: 14px; margin-top: 10px" @click="editProfile">
             <Icon name="edit" :size="16" /> Modifier mon profil
-
+            </button>
           <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFileChange" />
           <button
             class="photo-upload-btn"
