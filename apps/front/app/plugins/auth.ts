@@ -1,11 +1,13 @@
 export default defineNuxtPlugin(async () => {
-  const { token, user, fetchMe, logout } = useAuth()
+  if (import.meta.server) return
+
+  const { token, user, fetchMe } = useAuth()
 
   if (token.value && !user.value) {
     try {
       await fetchMe()
     } catch {
-      logout()
+      // Échec réseau temporaire — on garde le token, l'utilisateur reste connecté
     }
   }
 })

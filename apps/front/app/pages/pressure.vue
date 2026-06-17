@@ -2,11 +2,44 @@
 definePageMeta({ tabbar: false })
 
 interface PressureDto { rain: boolean, front_bar: number, rear_bar: number }
+interface WeatherDto {
+  current: {
+    temperature_2m: number
+    wind_speed_10m: number
+    relative_humidity_2m: number
+  }
+}
 
 const router = useRouter()
 const rain = ref(true)
 
 const { data } = await useApiFetch<PressureDto>('/api/pressure', { key: 'pressure', query: { rain: rain.value ? 1 : 0 }, watch: [rain] })
+
+const lat = ref<number | null>(null)
+const lon = ref<number | null>(null)
+const geoLoading = ref(true)
+
+const { data: weather, execute: fetchWeather } = useFetch<WeatherDto>(
+  () => `https://api.open-meteo.com/v1/forecast?latitude=${lat.value}&longitude=${lon.value}&current=temperature_2m,wind_speed_10m,relative_humidity_2m&timezone=auto`,
+  { key: 'weather', server: false, immediate: false },
+)
+
+onMounted(() => {
+  if (!navigator.geolocation) { geoLoading.value = false; return }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      lat.value = pos.coords.latitude
+      lon.value = pos.coords.longitude
+      geoLoading.value = false
+      fetchWeather()
+    },
+    () => { geoLoading.value = false },
+  )
+})
+
+const temperature = computed(() => weather.value ? `${Math.round(weather.value.current.temperature_2m)}°` : '—')
+const humidity = computed(() => weather.value ? `${weather.value.current.relative_humidity_2m}%` : '—')
+const windSpeed = computed(() => weather.value ? `${Math.round(weather.value.current.wind_speed_10m)} km/h` : '—')
 
 const reco = computed(() => data.value?.rear_bar ?? 2.9)
 const front = computed(() => data.value?.front_bar ?? 2.7)
@@ -59,22 +92,22 @@ function toggleRain() {
       <div class="card" style="padding: 16px; margin-bottom: 14px">
         <div class="between" style="margin-bottom: 14px">
           <span class="h-sm">Environnement</span>
-          <span class="badge badge-blue"><Icon name="loc" :size="12" /> Clermont-Fd</span>
+          <span class="badge badge-blue"><Icon name="loc" :size="12" /> {{ geoLoading ? 'Localisation…' : 'Ma position' }}</span>
         </div>
         <div style="display: flex; gap: 6px">
           <div style="flex: 1; text-align: center">
             <Icon name="thermo" :size="20" color="var(--ink-3)" />
-            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">14°</div>
+            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">{{ temperature }}</div>
             <div class="tiny">Temp.</div>
           </div>
           <div style="flex: 1; text-align: center">
             <Icon name="drop" :size="20" color="var(--ink-3)" />
-            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">82%</div>
+            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">{{ humidity }}</div>
             <div class="tiny">Humidité</div>
           </div>
           <div style="flex: 1; text-align: center">
             <Icon name="wind" :size="20" color="var(--ink-3)" />
-            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">18 km/h</div>
+            <div class="num" style="font-size: 16px; font-weight: 700; margin-top: 6px">{{ windSpeed }}</div>
             <div class="tiny">Vent</div>
           </div>
         </div>

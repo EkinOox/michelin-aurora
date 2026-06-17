@@ -21,6 +21,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   future: { compatibilityVersion: 4 },
   modules: ['@nuxtjs/tailwindcss', '@vite-pwa/nuxt'],
+  vite: {
+    optimizeDeps: {
+      include: ['three', 'workbox-window', '@vue/devtools-core', '@vue/devtools-kit'],
+    },
+  },
   css: ['~/assets/css/main.css'],
   app: {
     head: {
@@ -41,6 +46,7 @@ export default defineNuxtConfig({
     public: {
       // URL exposée au navigateur (client-side fetch)
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:8081',
+      orsApiKey: process.env.NUXT_PUBLIC_ORS_API_KEY ?? '',
     },
   },
   pwa: {
@@ -60,11 +66,10 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      navigateFallback: '/',
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     devOptions: {
-      enabled: true,
+      enabled: false,
       type: 'module',
     },
   },
