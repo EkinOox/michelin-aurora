@@ -1,20 +1,94 @@
 <script setup lang="ts">
-import type { RouteDto } from '~/components/RouteRow.vue'
-
 definePageMeta({ tabbar: true })
 
-const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'routes-list', default: () => [] })
 const { data: profile } = await useApiFetch<{ profile: { bike_type: string, rider_level: string } | null }>('/api/profile', { key: 'routes-profile' })
+
+const routes = useRoutesState()
+const loading = ref(false)
+const geoLoading = ref(true)
+
+const POS_KEY = 'aurora-position'
+const ROUTES_KEY = 'aurora-routes'
+const CACHE_TTL = 60 * 60 * 1000 // 1h
+
+function loadCachedPos(): { lat: number, lon: number } | null {
+  try {
+    const raw = localStorage.getItem(POS_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  }
+  catch { return null }
+}
+
+function loadCachedRoutes() {
+  try {
+    const raw = localStorage.getItem(ROUTES_KEY)
+    if (!raw) return null
+    const { ts, data } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data
+  }
+  catch { return null }
+}
+
+onMounted(async () => {
+  // Use in-memory state (navigated back from detail page)
+  if (routes.value.length) { geoLoading.value = false; return }
+
+  // Use localStorage cache
+  const cachedRoutes = loadCachedRoutes()
+  if (cachedRoutes?.length) {
+    routes.value = cachedRoutes
+    geoLoading.value = false
+    return
+  }
+
+  // Get position — use cached to avoid re-asking permission
+  let lat = 43.5297, lon = 5.4474
+  const cachedPos = loadCachedPos()
+  if (cachedPos) {
+    lat = cachedPos.lat
+    lon = cachedPos.lon
+    geoLoading.value = false
+  }
+  else {
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation
+          ? navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+          : reject(new Error('no geo')),
+      )
+      lat = pos.coords.latitude
+      lon = pos.coords.longitude
+      localStorage.setItem(POS_KEY, JSON.stringify({ lat, lon }))
+    }
+    catch { /* fallback to default */ }
+    geoLoading.value = false
+  }
+
+  loading.value = true
+  try {
+    const result = await fetchRoutes(lat, lon)
+    routes.value = result
+    localStorage.setItem(ROUTES_KEY, JSON.stringify({ ts: Date.now(), data: result }))
+  }
+  finally { loading.value = false }
+})
 
 const TYPE_LABEL: Record<string, string> = { route: 'Route', gravel: 'Gravel', vtt: 'VTT', vae: 'VAE' }
 const LEVEL_LABEL: Record<string, string> = { beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert' }
 
 const types = ['Tous', 'Route', 'Gravel', 'VTT', 'VAE']
 const filter = ref('Tous')
-const list = computed(() => {
-  if (filter.value === 'Tous') return routes.value ?? []
-  return (routes.value ?? []).filter(r => TYPE_LABEL[r.bike_type] === filter.value)
-})
+const page = ref(1)
+
+const filtered = computed(() =>
+  filter.value === 'Tous' ? routes.value : routes.value.filter(r => TYPE_LABEL[r.bike_type] === filter.value),
+)
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / 10)))
+const list = computed(() => filtered.value.slice((page.value - 1) * 10, page.value * 10))
+
+watch(filter, () => { page.value = 1 })
 
 const bikeLabel = computed(() => TYPE_LABEL[profile.value?.profile?.bike_type ?? ''] ?? '—')
 const levelLabel = computed(() => LEVEL_LABEL[profile.value?.profile?.rider_level ?? ''] ?? '—')
@@ -61,7 +135,27 @@ const levelLabel = computed(() => LEVEL_LABEL[profile.value?.profile?.rider_leve
           <button v-for="t in types" :key="t" :class="['chip', filter === t ? 'is-active' : '']" @click="filter = t">{{ t }}</button>
         </div>
 
-        <RouteRow v-for="r in list" :key="r.id" :route="r" />
+        <div v-if="geoLoading || loading" style="padding: 32px 0; text-align: center; color: var(--mute)">
+          <Icon name="loc" :size="20" color="var(--mute)" />
+          <div class="small" style="margin-top: 8px">{{ geoLoading ? 'Localisation…' : 'Chargement des parcours…' }}</div>
+        </div>
+        <template v-else>
+          <div v-if="filtered.length === 0" style="padding: 32px 0; text-align: center; color: var(--mute)">
+            <div class="small">Aucune route calculée.</div>
+          </div>
+          <template v-else>
+            <RouteRow v-for="r in list" :key="r.id" :route="r" />
+            <div v-if="totalPages > 1" style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; margin-bottom: 8px">
+              <button class="btn" :disabled="page === 1" style="flex: 1; margin-right: 8px; height: 44px" :style="{ opacity: page === 1 ? 0.35 : 1 }" @click="page--">
+                <Icon name="chevL" :size="16" /> Précédent
+              </button>
+              <span class="tiny num" style="white-space: nowrap; color: var(--mute)">{{ page }} / {{ totalPages }}</span>
+              <button class="btn" :disabled="page === totalPages" style="flex: 1; margin-left: 8px; height: 44px" :style="{ opacity: page === totalPages ? 0.35 : 1 }" @click="page++">
+                Suivant <Icon name="chev" :size="16" />
+              </button>
+            </div>
+          </template>
+        </template>
 
         <div class="card" style="padding: 16px; margin-top: 6px; display: flex; gap: 12px; align-items: center; background: var(--surface-2); border-color: transparent">
           <Icon name="star" :size="22" color="var(--yellow)" />

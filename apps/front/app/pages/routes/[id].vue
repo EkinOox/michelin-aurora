@@ -1,30 +1,61 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: false })
 
-interface RouteDetailDto {
-  id: string
-  name: string
-  bike_type: string
-  difficulty: string
-  michelin_score: number
-  distance_km: number
-  elevation_gain_m: number
-  surface: string
-  duration_label: string
-  description: string
-  safety_score: number
-  fun_score: number
-  match_score: number
-  tag: string | null
-  tire_id: string | null
-}
 
 const route = useRoute()
 const router = useRouter()
 
-const { data: r } = await useApiFetch<RouteDetailDto>(() => `/api/routes/${route.params.id}`, { key: `route-detail-${route.params.id}` })
+const routes = useRoutesState()
+const r = computed(() => routes.value.find(x => x.id === route.params.id) ?? null)
 
-const layer = ref('Plan')
+// GPS geometry for the map
+interface Pt { lat: number, lon: number }
+const segments = ref<Pt[][]>([])
+const geoLoading = ref(true)
+
+const GEO_TTL = 7 * 24 * 60 * 60 * 1000 // 7 jours (la géométrie OSM change rarement)
+
+onMounted(async () => {
+  if (!r.value) { router.replace('/routes'); return }
+
+  const id = route.params.id as string
+  const cacheKey = `aurora-geo-${id}`
+
+  // Lecture du cache localStorage
+  try {
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const { ts, data } = JSON.parse(cached)
+      if (Date.now() - ts < GEO_TTL) {
+        segments.value = data
+        geoLoading.value = false
+        return
+      }
+    }
+  }
+  catch { /* ignore */ }
+
+  try {
+    const query = `[out:json];relation(${id});out geom;`
+    const res = await $fetch<{ elements: { members?: { geometry?: Pt[] }[] }[] }>(
+      `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
+      { headers: { 'User-Agent': 'michelin-aurora/1.0' } },
+    )
+    const el = res.elements[0]
+    if (el?.members) {
+      segments.value = el.members
+        .map(m => m.geometry ?? [])
+        .filter(g => g.length > 1)
+      // Mise en cache si on a des données
+      if (segments.value.length) {
+        localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: segments.value }))
+      }
+    }
+  }
+  catch { /* keep empty */ }
+  finally { geoLoading.value = false }
+})
+
 const compatible = computed(() => (r.value?.match_score ?? 0) >= 85)
 
 const TYPE_LABEL: Record<string, string> = { route: 'Route', gravel: 'Gravel', vtt: 'VTT', vae: 'VAE' }
@@ -40,20 +71,18 @@ function startRide() {
 <template>
   <div v-if="r" class="screen">
     <div class="screen-scroll" style="padding-bottom: 120px">
-      <div class="mapbg-dark" style="position: relative; height: 280px; overflow: hidden">
-        <svg viewBox="0 0 400 280" style="position: absolute; inset: 0; width: 100%; height: 100%">
-          <path d="M40 250 C120 200, 90 150, 180 150 S280 120, 250 70 S330 40, 360 60" fill="none" stroke="var(--yellow)" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 10" opacity="0.5" />
-          <path d="M40 250 C120 200, 90 150, 180 150 S280 120, 250 70 S330 40, 360 60" fill="none" stroke="var(--lime)" stroke-width="3.5" stroke-linecap="round" />
-          <circle cx="40" cy="250" r="7" fill="var(--yellow)" stroke="#10140c" stroke-width="2" />
-          <circle cx="360" cy="60" r="7" fill="var(--lime)" stroke="#10140c" stroke-width="2" />
-        </svg>
-        <div class="pad safe-top" style="position: absolute; top: 0; left: 0; right: 0; padding-top: 58px">
-          <div class="between">
-            <button class="iconbtn iconbtn-dark" @click="router.back()"><Icon name="chevL" :size="20" /></button>
-            <div class="seg" style="background: rgba(20,22,24,.6); border: none; backdrop-filter: blur(8px)">
-              <button v-for="l in ['Plan', 'Satellite']" :key="l" :class="layer === l ? 'on' : ''" :style="{ color: layer === l ? 'var(--ink)' : 'rgba(255,255,255,.7)' }" @click="layer = l">{{ l }}</button>
-            </div>
-          </div>
+      <div style="position: relative; height: 280px; overflow: hidden; background: #e8e0d8">
+        <div v-if="geoLoading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #e8e0d8">
+          <div class="map-spinner" />
+        </div>
+        <ClientOnly v-else-if="segments.length">
+          <RouteMap :segments="segments" style="position: absolute; inset: 0" />
+        </ClientOnly>
+        <div v-else style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #e8e0d8">
+          <div class="tiny" style="color: #999">Tracé non disponible</div>
+        </div>
+        <div class="pad safe-top" style="position: absolute; top: 0; left: 0; right: 0; padding-top: 58px; z-index: 1000">
+          <button class="iconbtn iconbtn-dark" @click="router.back()"><Icon name="chevL" :size="20" /></button>
         </div>
         <div class="pad" style="position: absolute; bottom: 14px; left: 0; right: 0">
           <span v-if="r.tag" class="badge badge-yellow">{{ r.tag }}</span>
@@ -71,11 +100,11 @@ function startRide() {
             <div class="tiny" style="margin-top: 2px">Distance</div>
           </div>
           <div style="flex: 1; text-align: center; border-left: 1px solid var(--line-2)">
-            <div class="num" style="font-size: 15px; font-weight: 700">↑{{ r.elevation_gain_m }} m</div>
+            <div class="num" style="font-size: 15px; font-weight: 700">{{ r.elevation_gain_m != null ? '↑' + r.elevation_gain_m + ' m' : '—' }}</div>
             <div class="tiny" style="margin-top: 2px">Dénivelé</div>
           </div>
           <div style="flex: 1; text-align: center; border-left: 1px solid var(--line-2)">
-            <div class="num" style="font-size: 15px; font-weight: 700">{{ r.duration_label }}</div>
+            <div class="num" style="font-size: 15px; font-weight: 700">{{ r.duration_label ?? '—' }}</div>
             <div class="tiny" style="margin-top: 2px">Durée</div>
           </div>
           <div style="flex: 1; text-align: center; border-left: 1px solid var(--line-2)">
@@ -132,3 +161,15 @@ function startRide() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.map-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 0, 0, .12);
+  border-top-color: #84cc16;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+</style>

@@ -11,7 +11,7 @@ import json
 import urllib.request
 import urllib.error
 
-API_BASE = os.environ.get("API_BASE", "http://localhost:8081")
+API_BASE = os.environ.get("API_BASE", "http://localhost:8081").rstrip("/")
 TELEMETRY_URL = f"{API_BASE}/api/telemetry"
 DEMO_RIDE_URL = f"{API_BASE}/api/rides/demo"
 INTERVAL_S = 2

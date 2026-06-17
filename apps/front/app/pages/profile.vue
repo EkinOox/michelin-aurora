@@ -27,6 +27,7 @@ const retailerSheet = useRetailerSheet()
 const { logout: logoutAuth } = useAuth()
 
 const { data: profile } = await useApiFetch<ProfileDto>('/api/profile', { key: 'profile' })
+const { frontStr, rearStr, isRain, loading: pressureLoading } = usePressure()
 
 const initials = computed(() => {
   const n = profile.value?.name ?? ''
@@ -93,7 +94,20 @@ function logout() {
               <div class="small" style="font-weight: 700; color: var(--ink); margin-top: 2px">{{ s.v }}</div>
             </div>
           </div>
-          <button class="btn btn-ghost btn-block" style="height: 44px; font-size: 14px; margin-top: 12px" @click="editProfile">
+          <NuxtLink to="/pressure" class="card" style="padding: 14px 16px; margin-top: 12px; display: flex; align-items: center; gap: 14px">
+            <Icon name="gauge" :size="22" color="var(--blue)" />
+            <div style="flex: 1">
+              <div class="tiny">Pression recommandée · <span :style="{ color: isRain ? 'var(--blue)' : 'var(--lime-600)' }">{{ isRain ? 'Pluie' : 'Sec' }}</span></div>
+              <div v-if="pressureLoading" class="small" style="color: var(--mute); margin-top: 2px">Calcul en cours…</div>
+              <div v-else class="row" style="gap: 12px; margin-top: 2px">
+                <span class="num" style="font-size: 15px; font-weight: 700">Av {{ frontStr }} bar</span>
+                <span style="color: var(--line)">|</span>
+                <span class="num" style="font-size: 15px; font-weight: 700">Ar {{ rearStr }} bar</span>
+              </div>
+            </div>
+            <Icon name="chev" :size="16" color="var(--mute)" />
+          </NuxtLink>
+          <button class="btn btn-ghost btn-block" style="height: 44px; font-size: 14px; margin-top: 10px" @click="editProfile">
             <Icon name="edit" :size="16" /> Modifier mon profil
           </button>
         </div>

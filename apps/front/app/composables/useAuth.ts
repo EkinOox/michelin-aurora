@@ -7,12 +7,10 @@ interface AuthUser {
   total_points: number
 }
 
+const TOKEN_KEY = 'aurora_token'
+
 export function useAuthToken() {
-  return useCookie<string | null>('aurora_token', {
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 30,
-    default: () => null,
-  })
+  return useState<string | null>(TOKEN_KEY, () => null)
 }
 
 export function useAuthUser() {
