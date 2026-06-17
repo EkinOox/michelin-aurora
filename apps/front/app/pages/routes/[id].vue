@@ -13,11 +13,29 @@ interface Pt { lat: number, lon: number }
 const segments = ref<Pt[][]>([])
 const geoLoading = ref(true)
 
+const GEO_TTL = 7 * 24 * 60 * 60 * 1000 // 7 jours (la géométrie OSM change rarement)
+
 onMounted(async () => {
   if (!r.value) { router.replace('/routes'); return }
 
+  const id = route.params.id as string
+  const cacheKey = `aurora-geo-${id}`
+
+  // Lecture du cache localStorage
   try {
-    const id = route.params.id as string
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const { ts, data } = JSON.parse(cached)
+      if (Date.now() - ts < GEO_TTL) {
+        segments.value = data
+        geoLoading.value = false
+        return
+      }
+    }
+  }
+  catch { /* ignore */ }
+
+  try {
     const query = `[out:json];relation(${id});out geom;`
     const res = await $fetch<{ elements: { members?: { geometry?: Pt[] }[] }[] }>(
       `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
@@ -28,6 +46,10 @@ onMounted(async () => {
       segments.value = el.members
         .map(m => m.geometry ?? [])
         .filter(g => g.length > 1)
+      // Mise en cache si on a des données
+      if (segments.value.length) {
+        localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: segments.value }))
+      }
     }
   }
   catch { /* keep empty */ }
