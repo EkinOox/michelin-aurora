@@ -304,7 +304,7 @@ const rewardsProgress = computed(() => {
 /* ── Section Explorer ─────────────────────────────────────────────────── */
 .explore-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
 
@@ -312,11 +312,12 @@ const rewardsProgress = computed(() => {
   position: relative;
   overflow: hidden;
   border-radius: 20px;
-  padding: 16px 16px 14px;
+  padding: 14px 14px 13px;
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-height: 120px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
   text-decoration: none;
   border: none;
   box-shadow: 0 4px 18px rgba(0, 0, 0, .18), 0 1px 0 rgba(255,255,255,.08) inset;
@@ -332,8 +333,8 @@ const rewardsProgress = computed(() => {
 
 /* Icône glassmorphism */
 .explore-icon {
-  width: 44px; height: 44px;
-  border-radius: 13px;
+  width: 42px; height: 42px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, .18);
   border: 1px solid rgba(255, 255, 255, .22);
   backdrop-filter: blur(6px);
@@ -343,25 +344,28 @@ const rewardsProgress = computed(() => {
 
 /* Texte */
 .explore-body {
-  margin-top: auto;
-  padding-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .explore-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #fff;
   letter-spacing: -.02em;
   line-height: 1;
+  white-space: nowrap;
 }
 .explore-sub {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 500;
   color: rgba(255, 255, 255, .62);
   letter-spacing: .01em;
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Cercles décoratifs */
@@ -376,9 +380,12 @@ const rewardsProgress = computed(() => {
 
 /* Desktop : cartes plus hautes avec hover lift */
 @media (min-width: 900px) {
-  .explore-grid { gap: 14px; }
+  .explore-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
   .explore-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
     min-height: 156px;
     padding: 20px 20px 18px;
     border-radius: 24px;
@@ -389,14 +396,11 @@ const rewardsProgress = computed(() => {
     box-shadow: 0 14px 40px rgba(0, 0, 0, .28), 0 1px 0 rgba(255,255,255,.1) inset;
   }
 
-  .explore-icon {
-    width: 52px; height: 52px;
-    border-radius: 16px;
-  }
+  .explore-icon { width: 52px; height: 52px; border-radius: 16px; }
 
-  .explore-body   { padding-top: 18px; }
-  .explore-title  { font-size: 17px; }
-  .explore-sub    { font-size: 11.5px; }
+  .explore-body   { margin-top: auto; padding-top: 18px; }
+  .explore-title  { font-size: 17px; white-space: normal; }
+  .explore-sub    { font-size: 11.5px; white-space: normal; overflow: visible; text-overflow: unset; }
 
   .explore-deco-a { width: 140px; height: 140px; right: -36px; top: -36px; }
   .explore-deco-b { width: 80px;  height: 80px;  right:  18px; top:  38px; }
