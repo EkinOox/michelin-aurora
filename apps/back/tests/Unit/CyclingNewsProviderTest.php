@@ -3,6 +3,7 @@
 namespace App\Tests\Unit;
 
 use App\Service\CyclingNewsProvider;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,7 +19,7 @@ final class CyclingNewsProviderTest extends TestCase
         $this->provider = new CyclingNewsProvider(sys_get_temp_dir());
     }
 
-    /** @dataProvider sportingCases */
+    #[DataProvider('sportingCases')]
     public function testIsSporting(bool $expected, string $title, string $description, array $categories): void
     {
         self::assertSame($expected, $this->provider->isSporting($title, $description, $categories));
