@@ -7,11 +7,13 @@ interface TelemetryReading {
   speed_kmh: number
   alert_triggered: boolean
   recorded_at: string
+  km_remaining?: number
 }
 
 const apiBase = useApiBase()
 const router = useRouter()
 const activeRide = useActiveRide()
+const activeRoute = useActiveRoute()
 
 const running = ref(true)
 const connectionStatus = ref<'connecting' | 'connected'>('connecting')
@@ -26,6 +28,13 @@ let elapsedTimer: ReturnType<typeof setInterval> | null = null
 const speed = computed(() => lastReading.value?.speed_kmh ?? 0)
 const pressureFront = computed(() => lastReading.value?.pressure_front_bar ?? 2.6)
 const pressureRear = computed(() => lastReading.value?.pressure_rear_bar ?? 2.8)
+
+const routeName = computed(() => activeRoute.value?.name ?? 'Sortie libre')
+const routeTotalKm = computed(() => activeRoute.value?.distance_km ?? null)
+const kmRemaining = computed(() => {
+  if (!routeTotalKm.value) return null
+  return Math.max(0, routeTotalKm.value - distanceKm.value)
+})
 
 const mm = computed(() => String(Math.floor(elapsedSec.value / 60)).padStart(2, '0'))
 const ss = computed(() => String(elapsedSec.value % 60).padStart(2, '0'))
@@ -98,7 +107,7 @@ onBeforeUnmount(() => {
         </div>
         <div style="margin-top: 14px">
           <div class="eyebrow" style="color: var(--yellow)">Télémétrie live · ESP32</div>
-          <div class="h-md" style="color: #fff; margin-top: 4px">Chemins des Volcans</div>
+          <div class="h-md" style="color: #fff; margin-top: 4px">{{ routeName }}</div>
         </div>
       </div>
 
@@ -107,6 +116,18 @@ onBeforeUnmount(() => {
           {{ fmt(speed) }}
         </div>
         <div class="eyebrow" style="color: rgba(255,255,255,.6); margin-top: 2px">km/h · vitesse instantanée</div>
+      </div>
+
+      <div v-if="kmRemaining !== null" class="pad" style="margin-top: 16px">
+        <div style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: var(--r-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between">
+          <div class="row" style="gap: 7px">
+            <Icon name="route" :size="15" color="var(--yellow)" />
+            <span class="tiny" style="color: rgba(255,255,255,.55)">Km restants</span>
+          </div>
+          <div class="num" style="font-size: 20px; font-weight: 800; color: #fff">
+            {{ fmt(kmRemaining, 1) }}<span style="font-size: 11px; color: rgba(255,255,255,.4); margin-left: 3px">/ {{ routeTotalKm }} km</span>
+          </div>
+        </div>
       </div>
 
       <div class="pad" style="margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">

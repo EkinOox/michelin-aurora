@@ -63,7 +63,16 @@ const typeLabel = computed(() => TYPE_LABEL[r.value?.bike_type ?? ''] ?? r.value
 const LEVEL_LABEL: Record<string, string> = { beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert' }
 const levelLabel = computed(() => LEVEL_LABEL[r.value?.difficulty ?? ''] ?? r.value?.difficulty)
 
+const activeRoute = useActiveRoute()
+
 function startRide() {
+  if (r.value) {
+    activeRoute.value = {
+      id:          r.value.id,
+      name:        r.value.name,
+      distance_km: r.value.distance_km,
+    }
+  }
   router.push('/ride')
 }
 </script>

@@ -26,6 +26,7 @@ TELEMETRY_URL = f"{API_BASE}/api/telemetry"
 DEMO_RIDE_URL = f"{API_BASE}/api/rides/demo"
 INTERVAL_S    = 2
 BIKE_TYPE     = os.environ.get("BIKE_TYPE", "road").lower()
+ROUTE_KM      = float(os.environ.get("ROUTE_KM", "0"))  # 0 = sortie libre
 
 # Profils par type de vélo : (pression nominale, écart front/rear, seuil alerte bas, haut)
 PROFILES = {
@@ -244,7 +245,8 @@ def is_alert(state: SimState) -> bool:
 
 
 def build_payload(ride_id: str, state: SimState) -> dict:
-    return {
+    km_remaining = round(max(0.0, ROUTE_KM - state.total_km), 2) if ROUTE_KM > 0 else None
+    payload: dict = {
         "ride_id":            ride_id,
         "pressure_front_bar": round(state.p_front, 3),
         "pressure_rear_bar":  round(state.p_rear,  3),
@@ -256,6 +258,9 @@ def build_payload(ride_id: str, state: SimState) -> dict:
         "phase":              state.phase.value,
         "alert_triggered":    is_alert(state),
     }
+    if km_remaining is not None:
+        payload["km_remaining"] = km_remaining
+    return payload
 
 
 # ── Réseau ────────────────────────────────────────────────────────────────────
@@ -302,9 +307,11 @@ if __name__ == "__main__":
     state   = SimState()
     state.target_speed = 0.0
 
+    route_info = f"{ROUTE_KM} km" if ROUTE_KM > 0 else "sortie libre"
     print(
         f"\nSimulateur ESP32 démarré"
-        f"\n  Vélo   : {BIKE_TYPE}"
+        f"\n  Vélo    : {BIKE_TYPE}"
+        f"\n  Route   : {route_info}"
         f"\n  Pression nominale : {PROFILE['p_front']} / {PROFILE['p_rear']} bar (F/R)"
         f"\n  Temp ambiante     : {AMBIENT_TEMP_C:.1f}°C"
         f"\n  Push toutes les   : {INTERVAL_S}s → {TELEMETRY_URL}\n"
