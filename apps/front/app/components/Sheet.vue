@@ -22,6 +22,40 @@ const emit = defineEmits<{ close: [] }>()
       </div>
     </div>
   </Teleport>
+  <Teleport to="body">
+    <div :style="{ position: 'fixed', inset: 0, zIndex: 60, pointerEvents: open ? 'auto' : 'none' }">
+      <!-- backdrop -->
+      <div
+        @click="emit('close')"
+        :style="{
+          position: 'absolute', inset: 0, background: 'rgba(15,17,18,.45)',
+          opacity: open ? 1 : 0, transition: 'opacity .3s', backdropFilter: 'blur(3px)',
+        }"
+      />
+      <!-- drawer -->
+      <div
+        :style="{
+          position: 'absolute', left: 0, right: 0, bottom: 0,
+          background: 'var(--surface)',
+          borderRadius: '28px 28px 0 0',
+          maxHeight: '88vh',
+          display: 'flex', flexDirection: 'column',
+          transform: open ? 'translateY(0)' : 'translateY(110%)',
+          transition: 'transform .42s cubic-bezier(.22,1,.36,1)',
+          boxShadow: '0 -10px 40px rgba(0,0,0,.18)',
+        }"
+      >
+        <!-- drag handle -->
+        <div style="padding: 10px 20px 0; flex-shrink: 0">
+          <div style="width: 42px; height: 5px; border-radius: 99px; background: #E5E5E5; margin: 0 auto 14px" />
+        </div>
+        <!-- scrollable content -->
+        <div style="overflow-y: auto; padding: 0 20px 28px; flex: 1; -webkit-overflow-scrolling: touch">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>

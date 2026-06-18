@@ -1,5 +1,7 @@
 export interface RetailerSheetProduct {
   name: string
+  color_token?: string | null
+  bike_type?: string | null
 }
 
 export function useRetailerSheet() {

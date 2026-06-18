@@ -45,6 +45,12 @@ class Tire
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $colorToken = null;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $weightG = null;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $diameterLabel = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -154,6 +160,30 @@ class Tire
     public function setColorToken(?string $colorToken): static
     {
         $this->colorToken = $colorToken;
+
+        return $this;
+    }
+
+    public function getWeightG(): ?int
+    {
+        return $this->weightG;
+    }
+
+    public function setWeightG(?int $weightG): static
+    {
+        $this->weightG = $weightG;
+
+        return $this;
+    }
+
+    public function getDiameterLabel(): ?string
+    {
+        return $this->diameterLabel;
+    }
+
+    public function setDiameterLabel(?string $diameterLabel): static
+    {
+        $this->diameterLabel = $diameterLabel;
 
         return $this;
     }
