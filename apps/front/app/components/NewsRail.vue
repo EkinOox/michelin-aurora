@@ -3,27 +3,32 @@ import { imageFor } from '~/data/images'
 
 interface NewsArticleDto {
   id: string
+  cat: string
   tag: string
   title: string
   date: string
-  read_time: string
+  read_time: string | null
   image_key: string
   body: string
+  url?: string | null
 }
 
 const { open } = useArticleSheet()
 
 const { data: news } = await useApiFetch<NewsArticleDto[]>('/api/news', { key: 'news', default: () => [] })
 
+// Aperçu home : on garde l'actu (les événements ont leur place sur la page dédiée).
+const preview = computed(() => (news.value ?? []).filter(n => n.cat !== 'event').slice(0, 10))
+
 function onOpen(n: NewsArticleDto) {
-  open({ id: n.id, tag: n.tag, title: n.title, date: n.date, read: n.read_time, img: imageFor(n.image_key), body: n.body })
+  open({ id: n.id, tag: n.tag, title: n.title, date: n.date, read: n.read_time, img: imageFor(n.image_key), body: n.body, url: n.url })
 }
 </script>
 
 <template>
   <div style="display: flex; gap: 12px; overflow-x: auto; margin: 0 -20px; padding: 2px 20px 6px">
     <button
-      v-for="n in news" :key="n.id" class="card"
+      v-for="n in preview" :key="n.id" class="card"
       style="flex: 0 0 230px; padding: 0; overflow: hidden; text-align: left; display: flex; flex-direction: column"
       @click="onOpen(n)"
     >

@@ -195,6 +195,7 @@ const rewardsProgress = computed(() => {
       <div class="pad rise d4" style="margin-top: 18px">
         <div class="between" style="margin-bottom: 10px">
           <span class="h-sm">Actualités Michelin</span>
+          <NuxtLink to="/actualites" class="small" style="color: var(--lime-600); font-weight: 700">Voir tout</NuxtLink>
         </div>
         <NewsRail />
       </div>
