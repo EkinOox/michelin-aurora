@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora — Présentation Hackathon Michelin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:    #27509B;
+  --blue-d:  #1a3878;
+  --blue-l:  #eaf0fb;
+  --yellow:  #FFD100;
+  --yellow-l:#FFFAE0;
+  --red:     #E71D36;
+  --red-l:   #fde8ec;
+  --ink:     #0f1113;
+  --ink-2:   #3a3d44;
+  --mute:    #8b8f98;
+  --bg:      #ffffff;
+  --sf:      #f5f6f8;
+  --line:    #e2e4e9;
+}
+
+html, body {
+  width:100%; height:100%;
+  background:#0a0a0a;
+  font-family: system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  overflow:hidden; user-select:none;
+}
+
+/* ── ENGINE ──────────────────────────────── */
+.deck { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+.slide-wrap { position:relative; width:min(100vw,177.78vh); height:min(100vh,56.25vw); }
+.slide { position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden; }
+.slide.active { display:flex; }
+
+/* ── CHROME ──────────────────────────────── */
+.progress { position:fixed; bottom:0; left:0; height:3px; background:var(--yellow); transition:width .4s; z-index:999; }
+.counter  { position:fixed; bottom:14px; right:20px; font-size:10px; font-weight:600; color:rgba(255,255,255,.25); z-index:999; letter-spacing:.08em; }
+.nav-btn  { position:fixed; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.4); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:998; transition:all .2s; }
+.nav-btn:hover { background:rgba(255,255,255,.15); color:#fff; }
+.nav-prev { left:12px; } .nav-next { right:12px; }
+
+/* ── BACKGROUNDS ─────────────────────────── */
+.bg-dark  { background:linear-gradient(145deg,#06101e 0%,#0c1e3e 50%,#152d58 100%); }
+.bg-white { background:#fff; }
+
+/* ── YELLOW BAR (top of every slide) ─────── */
+.ybar { height:4px; background:var(--yellow); flex-shrink:0; }
+
+/* ── BLUE BANNER HEADER (light slides) ───── */
+.banner {
+  background:var(--blue);
+  padding:clamp(10px,1.4vw,20px) clamp(28px,4vw,52px);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; position:relative; overflow:hidden;
+}
+.banner::after {
+  content:''; position:absolute;
+  width:clamp(100px,16vw,200px); height:clamp(100px,16vw,200px); border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.05);
+  right:clamp(-40px,-4vw,-20px); top:clamp(-50px,-6vw,-30px); pointer-events:none;
+}
+.banner::before {
+  content:''; position:absolute;
+  width:clamp(60px,9vw,110px); height:clamp(60px,9vw,110px); border-radius:50%;
+  border:1.5px solid rgba(255,215,0,.08);
+  right:clamp(20px,3vw,50px); top:clamp(-20px,-2vw,-5px); pointer-events:none;
+}
+.banner-left { position:relative; z-index:1; }
+.banner-eyebrow {
+  font-size:clamp(8px,.9vw,10.5px); font-weight:800; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--yellow); display:flex; align-items:center; gap:7px; margin-bottom:clamp(2px,.3vw,4px);
+}
+.banner-eyebrow i { font-size:.85em; }
+.banner-title {
+  font-size:clamp(16px,2.3vw,28px); font-weight:900; letter-spacing:-.025em; color:#fff; line-height:1.05;
+}
+.banner-num {
+  font-size:clamp(40px,7vw,86px); font-weight:900; color:rgba(255,255,255,.06);
+  letter-spacing:-.05em; line-height:1; flex-shrink:0; position:relative; z-index:1;
+}
+
+/* ── CONTENT AREA ────────────────────────── */
+.content { flex:1; overflow:hidden; padding:clamp(14px,1.8vw,26px) clamp(28px,4vw,52px); display:flex; flex-direction:column; }
+
+/* ── CARD (shadow, no heavy border) ─────── */
+.card {
+  background:#fff; border-radius:clamp(10px,1.2vw,16px);
+  box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.05);
+  padding:clamp(12px,1.5vw,20px);
+}
+.card-sf { background:var(--sf); box-shadow:none; border-radius:clamp(10px,1.2vw,16px); padding:clamp(12px,1.5vw,20px); }
+
+/* ── ICON CIRCLE ─────────────────────────── */
+.ic {
+  border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.ic-sm { width:clamp(28px,3.5vw,42px); height:clamp(28px,3.5vw,42px); font-size:clamp(12px,1.5vw,18px); }
+.ic-md { width:clamp(36px,4.8vw,56px); height:clamp(36px,4.8vw,56px); font-size:clamp(15px,2vw,24px); }
+.ic-blue   { background:var(--blue);    color:#fff; }
+.ic-yellow { background:var(--yellow);  color:var(--ink); }
+.ic-red    { background:var(--red);     color:#fff; }
+.ic-dark   { background:var(--ink);     color:#fff; }
+.ic-bl     { background:var(--blue-l);  color:var(--blue); }
+.ic-yl     { background:var(--yellow-l);color:#7a6000; }
+
+/* ── CHIP ────────────────────────────────── */
+.chip {
+  display:inline-flex; align-items:center; gap:clamp(4px,.5vw,7px);
+  padding:clamp(3px,.4vw,5px) clamp(9px,1.1vw,15px); border-radius:99px;
+  font-size:clamp(9px,.95vw,11px); font-weight:700; letter-spacing:.03em;
+}
+.chip i { font-size:.9em; }
+.chip-blue    { background:var(--blue);    color:#fff; }
+.chip-yellow  { background:var(--yellow);  color:var(--ink); }
+.chip-dark    { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.75); }
+.chip-outline { border:1.5px solid var(--line); color:var(--ink-2); background:transparent; }
+
+/* ── HIGHLIGHT STRIP ─────────────────────── */
+.hstrip {
+  border-radius:0 clamp(8px,1vw,12px) clamp(8px,1vw,12px) 0;
+  border-left:3.5px solid; padding:clamp(9px,1.1vw,15px) clamp(13px,1.6vw,20px);
+  display:flex; gap:clamp(10px,1.2vw,16px); align-items:flex-start;
+}
+.hstrip-blue   { border-color:var(--blue);   background:var(--blue-l); }
+.hstrip-yellow { border-color:var(--yellow);  background:var(--yellow-l); }
+.hstrip-red    { border-color:var(--red);     background:var(--red-l); }
+.hstrip-label  { font-size:clamp(8px,.9vw,10px); font-weight:800; letter-spacing:.15em; text-transform:uppercase; margin-bottom:3px; }
+.hstrip-blue   .hstrip-label { color:var(--blue); }
+.hstrip-yellow .hstrip-label { color:#7a6000; }
+.hstrip-red    .hstrip-label { color:var(--red); }
+.hstrip-title  { font-size:clamp(11px,1.3vw,15px); font-weight:800; color:var(--ink); margin-bottom:3px; }
+.hstrip-body   { font-size:clamp(10px,1.1vw,13px); color:var(--ink-2); line-height:1.5; }
+
+/* ── BLIST ───────────────────────────────── */
+.blist { list-style:none; display:flex; flex-direction:column; gap:4px; }
+.blist li { padding-left:clamp(14px,1.5vw,18px); position:relative; font-size:clamp(10px,1.1vw,13px); color:var(--ink-2); line-height:1.5; }
+.blist li::before { content:''; position:absolute; left:0; top:clamp(6px,.7vw,8px); width:clamp(5px,.55vw,7px); height:clamp(5px,.55vw,7px); border-radius:50%; background:var(--blue); }
+.blist li strong { color:var(--ink); font-weight:700; }
+
+/* ═══════════════════════════════════════════
+   SPECIFIC SLIDE STYLES
+═══════════════════════════════════════════ */
+
+/* ── S1 COVER ────────────────────────────── */
+.cover-inner { flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding:clamp(28px,5vw,70px); position:relative; z-index:1; }
+.cover-title { font-size:clamp(64px,12vw,132px); font-weight:900; letter-spacing:-.04em; line-height:.87; color:#fff; }
+.cover-title .o { color:var(--yellow); }
+.cover-footer { background:var(--blue); padding:clamp(12px,1.8vw,22px) clamp(28px,5vw,70px); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.ring { position:absolute; border-radius:50%; border:1px solid rgba(255,255,255,.05); pointer-events:none; }
+
+/* ── S2 TEAM ─────────────────────────────── */
+.team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.4vw,20px); flex:1; align-items:center; }
+.team-card { background:#fff; border-radius:clamp(14px,1.8vw,22px); padding:clamp(16px,2.2vw,30px); border-top:4px solid; display:flex; flex-direction:column; align-items:center; text-align:center; gap:clamp(8px,1vw,13px); height:100%; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.06),0 8px 30px rgba(0,0,0,.05); }
+.team-avatar { width:clamp(50px,7.5vw,90px); height:clamp(50px,7.5vw,90px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:clamp(18px,3vw,36px); font-weight:900; color:#fff; flex-shrink:0; }
+.team-name { font-size:clamp(14px,1.8vw,22px); font-weight:800; color:var(--ink); letter-spacing:-.02em; }
+.team-role { font-size:clamp(9px,1.1vw,13px); font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+.team-tasks { font-size:clamp(10px,1.1vw,12.5px); color:var(--mute); line-height:1.65; }
+
+/* ── S4 SOLUTION ─────────────────────────── */
+.sol-split { display:grid; grid-template-columns:1fr 1fr; gap:clamp(14px,1.8vw,24px); flex:1; }
+.sol-left { background:var(--blue); border-radius:clamp(14px,1.8vw,22px); padding:clamp(20px,2.5vw,36px); display:flex; flex-direction:column; justify-content:center; }
+.sol-right { display:flex; flex-direction:column; gap:clamp(8px,1vw,13px); justify-content:center; }
+.sol-row { display:flex; gap:clamp(10px,1.3vw,18px); align-items:flex-start; padding:clamp(10px,1.2vw,16px); border-radius:clamp(10px,1.2vw,16px); }
+.sol-row.blue   { background:var(--blue-l); }
+.sol-row.yellow { background:var(--yellow-l); }
+.sol-row.sf     { background:var(--sf); }
+.sol-row-title { font-size:clamp(11px,1.3vw,15px); font-weight:800; color:var(--ink); margin-bottom:3px; }
+.sol-row-body  { font-size:clamp(10px,1.1vw,13px); color:var(--ink-2); line-height:1.5; }
+
+/* ── S5 MVP ──────────────────────────────── */
+.mvp-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,1.5vw,22px); flex:1; align-items:stretch; }
+.mvp-col  { display:flex; flex-direction:column; gap:clamp(5px,.6vw,9px); }
+.mvp-col-label { font-size:clamp(9px,1vw,11px); font-weight:800; letter-spacing:.17em; text-transform:uppercase; display:flex; align-items:center; gap:7px; margin-bottom:clamp(2px,.3vw,4px); }
+.mvp-col-label i { font-size:1.05em; }
+.mvp-col-label.blue   { color:var(--blue); }
+.mvp-col-label.yellow { color:#7a6000; }
+.mvp-item { display:flex; align-items:center; gap:clamp(9px,1.1vw,14px); padding:clamp(8px,1vw,13px) clamp(10px,1.2vw,16px); border-radius:clamp(8px,1vw,12px); }
+.mvp-item.core   { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.06),0 3px 12px rgba(0,0,0,.04); }
+.mvp-item.extra  { background:var(--yellow-l); box-shadow:0 1px 3px rgba(0,0,0,.04); }
+.mvp-item.extra2 { background:var(--sf); }
+.mvp-icon { width:clamp(28px,3.5vw,44px); height:clamp(28px,3.5vw,44px); border-radius:clamp(7px,.8vw,11px); display:flex; align-items:center; justify-content:center; font-size:clamp(13px,1.6vw,21px); flex-shrink:0; }
+.mvp-text { font-size:clamp(11px,1.2vw,14px); font-weight:700; color:var(--ink); }
+.mvp-sub  { font-size:clamp(9px,1vw,12px); color:var(--mute); margin-top:1px; }
+
+/* ── S6 ARCH ─────────────────────────────── */
+.arch-diagram { display:flex; flex-direction:column; align-items:center; gap:clamp(4px,.5vw,8px); flex:1; justify-content:center; }
+.arch-layer { width:100%; border-radius:clamp(10px,1.2vw,16px); padding:clamp(10px,1.2vw,16px) clamp(16px,2vw,28px); display:flex; align-items:center; justify-content:space-between; }
+.layer-front { background:var(--blue-l); border:1.5px solid #bdd0f0; }
+.layer-back  { background:#eef2fb;       border:1.5px solid #9db8e8; }
+.layer-infra { background:var(--ink); }
+.arch-arrow  { font-size:clamp(10px,1.1vw,13px); color:var(--mute); display:flex; align-items:center; gap:7px; }
+.arch-arrow i { color:var(--blue); }
+.layer-title { font-size:clamp(11px,1.4vw,16px); font-weight:800; }
+.layer-sub   { font-size:clamp(8px,.9vw,11px); margin-top:2px; }
+.layer-front .layer-title,.layer-back .layer-title { color:var(--blue-d); }
+.layer-infra .layer-title { color:#fff; }
+.layer-front .layer-sub,.layer-back .layer-sub { color:var(--blue-d); opacity:.65; }
+.layer-infra .layer-sub { color:rgba(255,255,255,.4); }
+.arch-chips { display:flex; gap:clamp(4px,.5vw,7px); flex-wrap:wrap; }
+.arch-chip  { font-size:clamp(8px,.85vw,10.5px); font-weight:600; padding:clamp(2px,.3vw,4px) clamp(7px,.9vw,11px); border-radius:99px; display:inline-flex; align-items:center; gap:5px; }
+.arch-chip i { font-size:.9em; }
+.layer-front .arch-chip,.layer-back .arch-chip { background:rgba(39,80,155,.12); color:var(--blue); }
+.layer-infra .arch-chip { background:rgba(255,255,255,.1); color:rgba(255,255,255,.75); }
+.arch-apis  { display:flex; gap:clamp(8px,1vw,14px); justify-content:center; width:100%; flex-wrap:wrap; }
+.api-chip   { font-size:clamp(9px,.9vw,11px); font-weight:600; padding:clamp(5px,.6vw,8px) clamp(10px,1.3vw,16px); border-radius:99px; border:1.5px solid var(--line); color:var(--mute); background:#fff; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.api-chip i { color:var(--blue); }
+
+/* ── S7 TECH ─────────────────────────────── */
+.tech-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(8px,1vw,14px); flex:1; }
+.tcard { border-radius:clamp(10px,1.2vw,16px); padding:clamp(12px,1.5vw,20px); display:flex; flex-direction:column; gap:clamp(7px,.9vw,11px); height:100%; }
+.tcard-blue   { background:var(--blue); }
+.tcard-dark   { background:var(--ink); }
+.tcard-yellow { background:var(--yellow); }
+.tcard-sf     { background:var(--sf); border:1.5px solid var(--line); }
+.tcard-blue-l { background:var(--blue-l); border:1.5px solid #bdd0f0; }
+.tcard-yl     { background:var(--yellow-l); border:1.5px solid #e8d266; }
+.tcard-fa { width:clamp(30px,3.8vw,46px); height:clamp(30px,3.8vw,46px); border-radius:clamp(7px,.8vw,11px); display:flex; align-items:center; justify-content:center; font-size:clamp(13px,1.7vw,21px); }
+.tcard-blue   .tcard-fa { background:rgba(255,255,255,.15); color:#fff; }
+.tcard-dark   .tcard-fa { background:rgba(255,255,255,.1);  color:#fff; }
+.tcard-yellow .tcard-fa { background:rgba(0,0,0,.1);         color:var(--ink); }
+.tcard-sf     .tcard-fa { background:var(--blue-l);          color:var(--blue); }
+.tcard-blue-l .tcard-fa { background:rgba(39,80,155,.12);    color:var(--blue); }
+.tcard-yl     .tcard-fa { background:rgba(255,209,0,.25);    color:#7a6000; }
+.tcard-title { font-size:clamp(11px,1.35vw,15.5px); font-weight:800; line-height:1.15; }
+.tcard-blue   .tcard-title,.tcard-dark .tcard-title { color:#fff; }
+.tcard-yellow .tcard-title { color:var(--ink); }
+.tcard-sf     .tcard-title,.tcard-blue-l .tcard-title { color:var(--ink); }
+.tcard-yl     .tcard-title { color:#5a4800; }
+.tcard-why { font-size:clamp(9.5px,1.05vw,12.5px); line-height:1.5; }
+.tcard-blue   .tcard-why,.tcard-dark .tcard-why { color:rgba(255,255,255,.62); }
+.tcard-yellow .tcard-why { color:rgba(15,17,19,.62); }
+.tcard-sf     .tcard-why,.tcard-blue-l .tcard-why { color:var(--mute); }
+.tcard-yl     .tcard-why { color:#7a6800; }
+
+/* ── S8 CI/CD ────────────────────────────── */
+.pipeline { display:flex; align-items:stretch; flex:1; }
+.pipe-step { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:clamp(10px,1.3vw,18px); background:var(--sf); border:1.5px solid var(--line); position:relative; text-align:center; gap:clamp(6px,.7vw,10px); }
+.pipe-step:first-child { border-radius:clamp(10px,1.2vw,16px) 0 0 clamp(10px,1.2vw,16px); }
+.pipe-step:last-child  { border-radius:0 clamp(10px,1.2vw,16px) clamp(10px,1.2vw,16px) 0; }
+.pipe-step.active  { background:var(--blue); border-color:var(--blue-d); }
+.pipe-step.success { background:var(--yellow); border-color:#c8a800; }
+.pipe-icon { width:clamp(36px,4.5vw,54px); height:clamp(36px,4.5vw,54px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:clamp(14px,1.8vw,22px); }
+.pipe-step           .pipe-icon { background:var(--line);              color:var(--mute); }
+.pipe-step.active    .pipe-icon { background:rgba(255,255,255,.2);     color:#fff; }
+.pipe-step.success   .pipe-icon { background:rgba(0,0,0,.1);           color:var(--ink); }
+.pipe-arrow { position:absolute; right:clamp(-12px,-1.3vw,-8px); font-size:clamp(12px,1.4vw,18px); color:var(--mute); z-index:1; }
+.pipe-step:last-child .pipe-arrow { display:none; }
+.pipe-title { font-size:clamp(11px,1.2vw,14px); font-weight:800; }
+.pipe-step         .pipe-title { color:var(--ink); }
+.pipe-step.active  .pipe-title { color:#fff; }
+.pipe-step.success .pipe-title { color:var(--ink); }
+.pipe-sub { font-size:clamp(9px,.9vw,11.5px); line-height:1.4; }
+.pipe-step         .pipe-sub { color:var(--mute); }
+.pipe-step.active  .pipe-sub { color:rgba(255,255,255,.7); }
+.pipe-step.success .pipe-sub { color:rgba(0,0,0,.5); }
+
+/* ── S9 UX ───────────────────────────────── */
+.ux-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(8px,1vw,14px); flex:1; align-items:start; }
+.ux-card { border-radius:clamp(10px,1.2vw,16px); background:#fff; padding:clamp(12px,1.5vw,20px); display:flex; flex-direction:column; gap:clamp(7px,.9vw,11px); box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.05); border-top:4px solid var(--blue); }
+.ux-icon { width:clamp(36px,4.5vw,52px); height:clamp(36px,4.5vw,52px); border-radius:clamp(9px,1.1vw,14px); display:flex; align-items:center; justify-content:center; font-size:clamp(16px,2.1vw,26px); color:#fff; }
+.ux-title { font-size:clamp(12px,1.3vw,15px); font-weight:800; color:var(--ink); }
+.ux-body  { font-size:clamp(10px,1.05vw,12.5px); color:var(--mute); line-height:1.55; }
+.ux-tag   { display:inline-flex; align-items:center; gap:5px; font-size:clamp(8px,.85vw,10px); font-weight:700; padding:2px 9px; border-radius:99px; width:fit-content; }
+.ux-tag-blue   { background:var(--blue-l); color:var(--blue); }
+.ux-tag-yellow { background:var(--yellow-l); color:#7a6000; }
+
+/* ── S10 ACQ ─────────────────────────────── */
+.acq-split { display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,1.5vw,20px); flex:1; }
+.acq-col   { border-radius:clamp(12px,1.5vw,20px); padding:clamp(14px,1.8vw,26px); display:flex; flex-direction:column; gap:clamp(8px,1vw,13px); }
+.acq-col.digital  { background:var(--blue); }
+.acq-col.physical { background:var(--sf); border:1.5px solid var(--line); }
+.acq-col-head { display:flex; align-items:center; gap:10px; margin-bottom:2px; }
+.acq-col-head-icon { width:clamp(28px,3.4vw,42px); height:clamp(28px,3.4vw,42px); border-radius:clamp(7px,.8vw,11px); display:flex; align-items:center; justify-content:center; font-size:clamp(13px,1.6vw,20px); }
+.acq-col.digital  .acq-col-head-icon { background:rgba(255,255,255,.15); color:#fff; }
+.acq-col.physical .acq-col-head-icon { background:var(--blue); color:#fff; }
+.acq-col-title { font-size:clamp(13px,1.7vw,20px); font-weight:900; letter-spacing:-.02em; }
+.acq-col.digital  .acq-col-title { color:#fff; }
+.acq-col.physical .acq-col-title { color:var(--ink); }
+.acq-item { display:flex; align-items:flex-start; gap:clamp(8px,1vw,12px); padding:clamp(8px,1vw,12px); border-radius:clamp(8px,1vw,12px); }
+.acq-col.digital  .acq-item { background:rgba(255,255,255,.09); }
+.acq-col.physical .acq-item { background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+.acq-item-ic { width:clamp(26px,3.2vw,38px); height:clamp(26px,3.2vw,38px); border-radius:clamp(6px,.7vw,10px); display:flex; align-items:center; justify-content:center; font-size:clamp(12px,1.5vw,18px); flex-shrink:0; }
+.acq-col.digital  .acq-item-ic { background:rgba(255,255,255,.15); color:#fff; }
+.acq-col.physical .acq-item-ic { background:var(--blue-l); color:var(--blue); }
+.acq-item-title { font-size:clamp(11px,1.2vw,14px); font-weight:800; }
+.acq-col.digital  .acq-item-title { color:#fff; }
+.acq-col.physical .acq-item-title { color:var(--ink); }
+.acq-item-body { font-size:clamp(9px,1vw,12px); line-height:1.45; margin-top:2px; }
+.acq-col.digital  .acq-item-body { color:rgba(255,255,255,.58); }
+.acq-col.physical .acq-item-body { color:var(--mute); }
+
+/* ── S11 LIVRABLES ───────────────────────── */
+.liv-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(10px,1.3vw,18px); flex:1; }
+.liv-col  { background:var(--sf); border-radius:clamp(12px,1.5vw,20px); padding:clamp(14px,1.8vw,24px); display:flex; flex-direction:column; gap:clamp(8px,1vw,13px); }
+.liv-col-label { font-size:clamp(9px,1vw,11px); font-weight:800; letter-spacing:.18em; text-transform:uppercase; display:flex; align-items:center; gap:7px; color:var(--blue); }
+.liv-row  { display:flex; gap:clamp(9px,1.1vw,14px); align-items:flex-start; }
+.liv-check { width:clamp(22px,2.8vw,32px); height:clamp(22px,2.8vw,32px); border-radius:50%; background:var(--yellow); color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:clamp(10px,1.2vw,14px); flex-shrink:0; font-weight:800; }
+.liv-title { font-size:clamp(11px,1.2vw,14px); font-weight:700; color:var(--ink); }
+.liv-sub   { font-size:clamp(9px,1vw,12px); color:var(--mute); margin-top:2px; }
+.liv-strip { background:var(--blue); border-radius:clamp(8px,1vw,14px); padding:clamp(10px,1.2vw,16px) clamp(14px,1.8vw,22px); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.liv-strip-text { font-size:clamp(11px,1.25vw,14px); font-weight:700; color:#fff; line-height:1.4; }
+.liv-strip-text span { color:rgba(255,255,255,.5); font-weight:400; }
+.liv-strip-badge { font-size:clamp(20px,3vw,36px); color:var(--yellow); white-space:nowrap; flex-shrink:0; }
+
+/* ── S12 DEMO ────────────────────────────── */
+.demo-inner { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:clamp(16px,2vw,28px); position:relative; z-index:1; padding:clamp(28px,5vw,70px); }
+.demo-btn   { width:clamp(64px,9vw,110px); height:clamp(64px,9vw,110px); border-radius:50%; background:rgba(255,209,0,.12); border:2px solid rgba(255,209,0,.3); display:flex; align-items:center; justify-content:center; font-size:clamp(22px,3.2vw,44px); color:var(--yellow); }
+.demo-flow  { display:flex; align-items:center; gap:clamp(4px,.6vw,10px); flex-wrap:wrap; justify-content:center; }
+.demo-step  { display:flex; align-items:center; gap:clamp(4px,.6vw,10px); }
+.demo-label { display:flex; align-items:center; gap:clamp(6px,.7vw,10px); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); border-radius:99px; padding:clamp(4px,.5vw,7px) clamp(10px,1.3vw,16px); font-size:clamp(9px,1.05vw,13px); font-weight:600; color:rgba(255,255,255,.8); }
+.demo-n     { width:clamp(17px,2vw,22px); height:clamp(17px,2vw,22px); border-radius:50%; background:var(--yellow); color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:clamp(9px,1vw,12px); font-weight:900; flex-shrink:0; }
+.demo-arr   { color:rgba(255,255,255,.2); font-size:clamp(10px,1.1vw,14px); }
+
+@media print {
+  body { background:#fff; }
+  .nav-btn,.progress,.counter { display:none; }
+  .slide { display:flex !important; page-break-after:always; position:relative; width:100%; height:100vh; }
+  .slide-wrap { width:100%; height:auto; position:static; }
+}
+</style>
+</head>
+<body>
+<div class="deck"><div class="slide-wrap">
+
+<!-- ═══ S1 COVER ════════════════════════════════════ -->
+<div class="slide bg-dark active" id="s1">
+  <div class="ybar"></div>
+  <div class="ring" style="width:50%;padding-top:50%;top:-22%;right:-10%;"></div>
+  <div class="ring" style="width:32%;padding-top:32%;top:-8%;right:9%;border-color:rgba(255,209,0,.07);"></div>
+  <div class="ring" style="width:18%;padding-top:18%;bottom:15%;left:5%;border-color:rgba(255,255,255,.04);"></div>
+
+  <div class="cover-inner">
+    <div style="font-size:clamp(9px,1vw,11px);font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);display:flex;align-items:center;gap:10px;margin-bottom:clamp(14px,1.8vw,24px);">
+      <span style="display:block;width:clamp(18px,2vw,28px);height:2px;background:var(--yellow);border-radius:2px;"></span>
+      Michelin LB 2 Wheels &nbsp;·&nbsp; Hackathon 2026
+    </div>
+    <div class="cover-title">AUR<span class="o">O</span>RA</div>
+    <div style="margin-top:clamp(10px,1.4vw,18px);font-size:clamp(13px,1.8vw,20px);color:rgba(255,255,255,.4);font-weight:400;max-width:500px;line-height:1.45;">
+      La Cycling Intelligence Platform qui transforme le pneumatique Michelin en service actif.
+    </div>
+    <div style="margin:clamp(16px,2vw,28px) 0;width:44px;height:3px;background:var(--yellow);border-radius:3px;"></div>
+    <div style="display:flex;gap:clamp(7px,.9vw,12px);flex-wrap:wrap;">
+      <span class="chip chip-yellow"><i class="fa-solid fa-mobile-screen-button"></i> PWA Mobile</span>
+      <span class="chip chip-blue"><i class="fa-solid fa-layer-group"></i> Nuxt 4 · Symfony 7</span>
+      <span class="chip chip-dark"><i class="fa-solid fa-bolt"></i> 11 features livrées</span>
+      <span class="chip chip-dark"><i class="fa-solid fa-satellite-dish"></i> Télémétrie IoT</span>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div>
+      <div style="font-size:clamp(10px,1.2vw,13px);font-weight:700;color:rgba(255,255,255,.8);">Aurora by Michelin · 2 Wheels</div>
+      <div style="font-size:clamp(9px,1vw,11px);color:rgba(255,255,255,.3);margin-top:2px;">PO : Abdellatif Ghachi — Global Account Manager E-retail 2W</div>
+    </div>
+    <span style="font-size:clamp(10px,1.2vw,13px);color:rgba(255,255,255,.3);">Kyllian Diochon · Melwin Duquenne · Jeremy Gross</span>
+  </div>
+</div>
+
+<!-- ═══ S2 ÉQUIPE ════════════════════════════════════ -->
+<div class="slide bg-white" id="s2">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-users"></i> Gestion de projet · Cohésion</div>
+      <div class="banner-title">L'équipe</div>
+    </div>
+    <div class="banner-num">02</div>
+  </div>
+  <div class="content" style="justify-content:center;">
+    <div class="team-grid">
+
+      <div class="team-card" style="border-color:var(--blue);">
+        <div class="team-avatar" style="background:var(--blue);">KD</div>
+        <div>
+          <div class="team-name">Kyllian Diochon</div>
+          <div class="team-role" style="color:var(--blue);margin-top:4px;">Dev Fullstack</div>
+        </div>
+        <div class="team-tasks">Architecture front Nuxt 4<br>Composants Aurora (UI/UX)<br>API REST Symfony 7<br>CI/CD · Déploiement</div>
+      </div>
+
+      <div class="team-card" style="border-color:#1d7abf;">
+        <div class="team-avatar" style="background:#1d7abf;">MD</div>
+        <div>
+          <div class="team-name">Melwin Duquenne</div>
+          <div class="team-role" style="color:#1d7abf;margin-top:4px;">Dev Fullstack</div>
+        </div>
+        <div class="team-tasks">Pages &amp; flows utilisateur<br>Système de récompenses<br>Communauté &amp; amis<br>PWA · Responsive mobile</div>
+      </div>
+
+      <div class="team-card" style="border-color:var(--yellow);">
+        <div class="team-avatar" style="background:var(--yellow);color:var(--ink);">JG</div>
+        <div>
+          <div class="team-name">Jeremy Gross</div>
+          <div class="team-role" style="color:#7a6000;margin-top:4px;">Dev Data</div>
+        </div>
+        <div class="team-tasks">Algorithme pression multi-facteurs<br>Intégration Open-Meteo API<br>Modélisation BDD · Fixtures<br>Tests unitaires PHPUnit</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S3 PROBLÈME ══════════════════════════════════ -->
+<div class="slide bg-white" id="s3">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-bullseye"></i> Pertinence de la proposition · ×4</div>
+      <div class="banner-title">La problématique client</div>
+    </div>
+    <div class="banner-num">03</div>
+  </div>
+  <div class="content" style="justify-content:center;gap:clamp(10px,1.3vw,18px);">
+
+    <div style="background:var(--blue-l);border-left:3.5px solid var(--blue);border-radius:0 clamp(10px,1.2vw,16px) clamp(10px,1.2vw,16px) 0;padding:clamp(12px,1.5vw,20px) clamp(16px,2vw,26px);display:flex;align-items:center;gap:clamp(12px,1.5vw,20px);">
+      <div class="ic ic-md ic-blue" style="border-radius:clamp(9px,1.1vw,14px);flex-shrink:0;"><i class="fa-solid fa-briefcase"></i></div>
+      <div>
+        <div style="font-size:clamp(9px,1vw,11px);font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;">Brief — Michelin LB 2 Wheels</div>
+        <div style="font-size:clamp(11px,1.3vw,15px);font-style:italic;color:var(--ink);line-height:1.45;font-weight:600;">"Donner de la <strong style="color:var(--blue);">visibilité à Michelin LB 2 Wheels</strong> auprès d'une clientèle premium. Créer de l'<strong style="color:var(--blue);">appétence pour la marque</strong> en offrant une gamme de services innovants."</div>
+        <div style="font-size:clamp(9px,1vw,11px);color:var(--mute);margin-top:5px;">— Abdellatif Ghachi, Global Account Manager E-retail 2W</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.3vw,18px);">
+      <div class="hstrip hstrip-red">
+        <div class="ic ic-sm ic-red" style="flex-shrink:0;margin-top:1px;"><i class="fa-solid fa-eye-slash"></i></div>
+        <div>
+          <div class="hstrip-label">Problème n°1 — Visibilité</div>
+          <div class="hstrip-title">Pas de point de contact digital</div>
+          <div class="hstrip-body">Michelin LB 2 Wheels vend des pneus premium, mais n'a aucune app ni service numérique. <strong>La marque disparaît après l'achat.</strong></div>
+        </div>
+      </div>
+      <div class="hstrip hstrip-red">
+        <div class="ic ic-sm ic-red" style="flex-shrink:0;margin-top:1px;"><i class="fa-solid fa-fire"></i></div>
+        <div>
+          <div class="hstrip-label">Problème n°2 — Appétence</div>
+          <div class="hstrip-title">Aucun service à valeur ajoutée</div>
+          <div class="hstrip-body">Le cycliste premium attend un <strong>partenaire de performance</strong>, pas seulement un consommable. Sans service innovant, Michelin reste une marque parmi d'autres.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--blue);border-radius:clamp(8px,1vw,14px);padding:clamp(10px,1.3vw,16px) clamp(14px,1.8vw,22px);display:flex;align-items:center;gap:clamp(10px,1.2vw,16px);">
+      <div class="ic ic-sm ic-yellow" style="border-radius:clamp(6px,.7vw,10px);flex-shrink:0;"><i class="fa-solid fa-arrow-right"></i></div>
+      <span style="font-size:clamp(11px,1.3vw,15px);color:#fff;line-height:1.45;font-weight:500;">Aurora place Michelin au cœur de <strong>chaque sortie cycliste</strong> — pression intelligente, télémétrie live, itinéraires, fidélisation. Le pneu devient un <strong style="color:var(--yellow);">service actif et visible</strong> au quotidien.</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ S4 SOLUTION ══════════════════════════════════ -->
+<div class="slide bg-white" id="s4">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-lightbulb"></i> Pertinence de la proposition · ×4</div>
+      <div class="banner-title">Notre solution</div>
+    </div>
+    <div class="banner-num">04</div>
+  </div>
+  <div class="content">
+    <div class="sol-split">
+      <div class="sol-left">
+        <div style="font-size:clamp(9px,1vw,11px);font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:clamp(8px,1vw,14px);">Aurora by Michelin</div>
+        <div style="font-size:clamp(20px,3.2vw,38px);font-weight:900;letter-spacing:-.03em;color:#fff;line-height:1.1;">
+          La <span style="color:var(--yellow);">Cycling<br>Intelligence</span><br>Platform
+        </div>
+        <div style="margin-top:clamp(12px,1.5vw,20px);font-size:clamp(11px,1.2vw,14px);color:rgba(255,255,255,.5);line-height:1.65;">
+          Pression dynamique · Télémétrie live<br>Itinéraires · Récompenses · Communauté
+        </div>
+        <div style="margin-top:clamp(14px,1.8vw,24px);display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip chip-yellow" style="font-size:clamp(9px,.95vw,11px);"><i class="fa-solid fa-mobile-screen-button"></i> PWA</span>
+          <span class="chip chip-dark" style="font-size:clamp(9px,.95vw,11px);"><i class="fa-solid fa-satellite-dish"></i> IoT</span>
+          <span class="chip chip-dark" style="font-size:clamp(9px,.95vw,11px);"><i class="fa-solid fa-award"></i> Gamification</span>
+        </div>
+      </div>
+      <div class="sol-right">
+        <div class="sol-row blue">
+          <div class="ic ic-sm ic-blue" style="border-radius:clamp(7px,.8vw,11px);flex-shrink:0;margin-top:1px;"><i class="fa-solid fa-gauge-high"></i></div>
+          <div>
+            <div class="sol-row-title">Intelligence pneumatique</div>
+            <div class="sol-row-body">Pression calculée en temps réel selon météo, type de vélo et niveau du rider. Alertes dès qu'une chute est détectée via le capteur IoT.</div>
+          </div>
+        </div>
+        <div class="sol-row sf">
+          <div class="ic ic-sm ic-dark" style="border-radius:clamp(7px,.8vw,11px);flex-shrink:0;margin-top:1px;"><i class="fa-solid fa-bicycle"></i></div>
+          <div>
+            <div class="sol-row-title">Expérience cycliste complète</div>
+            <div class="sol-row-body">Sorties trackées, itinéraires personnalisés, communauté, événements. Tout adapté au profil et à la discipline du rider.</div>
+          </div>
+        </div>
+        <div class="sol-row yellow">
+          <div class="ic ic-sm ic-yellow" style="border-radius:clamp(7px,.8vw,11px);flex-shrink:0;margin-top:1px;"><i class="fa-solid fa-trophy"></i></div>
+          <div>
+            <div class="sol-row-title">Engagement &amp; fidélisation Michelin</div>
+            <div class="sol-row-body">Gamification 5 niveaux, codes réduction sur pneus, revendeur agréé à portée en cas d'alerte pression critique.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S5 MVP ════════════════════════════════════════ -->
+<div class="slide bg-white" id="s5">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-list-check"></i> Pertinence de la proposition · ×4</div>
+      <div class="banner-title">Priorisation MVP</div>
+    </div>
+    <div class="banner-num">05</div>
+  </div>
+  <div class="content">
+    <div class="mvp-grid">
+
+      <div class="mvp-col">
+        <div class="mvp-col-label blue"><i class="fa-solid fa-circle-check"></i> MVP Core — livré en priorité</div>
+        <div class="mvp-item core">
+          <div class="mvp-icon ic-blue"><i class="fa-solid fa-lock"></i></div>
+          <div><div class="mvp-text">Authentification JWT</div><div class="mvp-sub">Inscription · Connexion · Token sécurisé</div></div>
+        </div>
+        <div class="mvp-item core">
+          <div class="mvp-icon ic-blue"><i class="fa-solid fa-user"></i></div>
+          <div><div class="mvp-text">Profil cycliste</div><div class="mvp-sub">Type vélo · Niveau · Usage · Photo</div></div>
+        </div>
+        <div class="mvp-item core">
+          <div class="mvp-icon ic-blue"><i class="fa-solid fa-gauge-high"></i></div>
+          <div><div class="mvp-text">Pression dynamique</div><div class="mvp-sub">Météo live · Algo multi-facteurs</div></div>
+        </div>
+        <div class="mvp-item core">
+          <div class="mvp-icon ic-blue"><i class="fa-solid fa-bicycle"></i></div>
+          <div><div class="mvp-text">Suivi de sortie</div><div class="mvp-sub">Démarrage · Distance · Durée · Points</div></div>
+        </div>
+      </div>
+
+      <div class="mvp-col">
+        <div class="mvp-col-label yellow"><i class="fa-solid fa-bolt"></i> Extras livrés — au-delà du MVP</div>
+        <div class="mvp-item extra">
+          <div class="mvp-icon ic-yellow"><i class="fa-solid fa-satellite-dish"></i></div>
+          <div><div class="mvp-text">Télémétrie SSE temps réel</div><div class="mvp-sub">Stream live pression · Alertes push</div></div>
+        </div>
+        <div class="mvp-item extra">
+          <div class="mvp-icon ic-yellow"><i class="fa-solid fa-trophy"></i></div>
+          <div><div class="mvp-text">Ride Rewards (5 rangs)</div><div class="mvp-sub">Points · Multiplicateurs · Codes promo</div></div>
+        </div>
+        <div class="mvp-item extra">
+          <div class="mvp-icon ic-yellow"><i class="fa-solid fa-users"></i></div>
+          <div><div class="mvp-text">Communauté &amp; Amis</div><div class="mvp-sub">Profil rider · Demandes · Stats</div></div>
+        </div>
+        <div class="mvp-item extra2">
+          <div class="mvp-icon ic-dark"><i class="fa-solid fa-plus"></i></div>
+          <div><div class="mvp-text">Boutique · Events · Notifs · PWA</div><div class="mvp-sub">Catalogue pneus · Revendeurs · Alertes</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S6 ARCHITECTURE ══════════════════════════════ -->
+<div class="slide bg-white" id="s6">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-sitemap"></i> Qualité de l'architecture · ×3</div>
+      <div class="banner-title">Architecture Back / Front</div>
+    </div>
+    <div class="banner-num">06</div>
+  </div>
+  <div class="content">
+    <div class="arch-diagram">
+      <div class="arch-layer layer-front">
+        <div>
+          <div class="layer-title">Frontend — PWA Nuxt 4</div>
+          <div class="layer-sub">TypeScript · Auto-imports · SSR/CSR hybride</div>
+        </div>
+        <div class="arch-chips">
+          <span class="arch-chip"><i class="fa-solid fa-code"></i> Nuxt 4</span>
+          <span class="arch-chip"><i class="fa-solid fa-code"></i> TypeScript</span>
+          <span class="arch-chip"><i class="fa-solid fa-puzzle-piece"></i> Composables</span>
+          <span class="arch-chip"><i class="fa-solid fa-mobile-screen-button"></i> PWA</span>
+          <span class="arch-chip"><i class="fa-solid fa-map"></i> MapLibre</span>
+        </div>
+      </div>
+      <div class="arch-arrow"><i class="fa-solid fa-arrow-up-arrow-down"></i> HTTPS · JWT Bearer Token</div>
+      <div class="arch-layer layer-back">
+        <div>
+          <div class="layer-title">Backend — API Symfony 7</div>
+          <div class="layer-sub">PHP 8.3 · REST + SSE stream · 15 controllers</div>
+        </div>
+        <div class="arch-chips">
+          <span class="arch-chip"><i class="fa-solid fa-s"></i> Symfony 7</span>
+          <span class="arch-chip"><i class="fa-solid fa-database"></i> Doctrine ORM</span>
+          <span class="arch-chip"><i class="fa-solid fa-key"></i> LexikJWT</span>
+          <span class="arch-chip"><i class="fa-solid fa-satellite-dish"></i> SSE</span>
+          <span class="arch-chip"><i class="fa-solid fa-flask"></i> PHPUnit</span>
+        </div>
+      </div>
+      <div class="arch-arrow"><i class="fa-solid fa-arrow-up-arrow-down"></i> Doctrine ORM</div>
+      <div class="arch-layer layer-infra">
+        <div>
+          <div class="layer-title">Infrastructure</div>
+          <div class="layer-sub">Docker Compose · Nginx reverse proxy · 4 services</div>
+        </div>
+        <div class="arch-chips">
+          <span class="arch-chip"><i class="fa-solid fa-database"></i> PostgreSQL 16</span>
+          <span class="arch-chip"><i class="fa-brands fa-docker"></i> Docker Compose</span>
+          <span class="arch-chip"><i class="fa-solid fa-server"></i> Nginx</span>
+          <span class="arch-chip"><i class="fa-brands fa-github"></i> GitHub Actions</span>
+        </div>
+      </div>
+      <div class="arch-apis">
+        <span class="api-chip"><i class="fa-solid fa-cloud-sun"></i> Open-Meteo — Météo live</span>
+        <span class="api-chip"><i class="fa-solid fa-map-location-dot"></i> Overpass API — OSM</span>
+        <span class="api-chip"><i class="fa-solid fa-key"></i> JWT stateless</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S7 CHOIX TECHNIQUES ══════════════════════════ -->
+<div class="slide bg-white" id="s7">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-microchip"></i> Qualité du code · Architecture · ×3</div>
+      <div class="banner-title">Choix techniques clés</div>
+    </div>
+    <div class="banner-num">07</div>
+  </div>
+  <div class="content">
+    <div class="tech-grid">
+
+      <div class="tcard tcard-blue">
+        <div class="tcard-fa"><i class="fa-solid fa-satellite-dish"></i></div>
+        <div class="tcard-title">SSE plutôt que WebSocket</div>
+        <div class="tcard-why">Télémétrie <strong style="color:#fff;">unidirectionnelle</strong> serveur → client. Natif HTTP, aucune config proxy. Idéal pour simuler un capteur pneu connecté.</div>
+      </div>
+
+      <div class="tcard tcard-dark">
+        <div class="tcard-fa"><i class="fa-solid fa-server"></i></div>
+        <div class="tcard-title">Nuxt 4 SSR hybride</div>
+        <div class="tcard-why">Premier paint côté serveur (SEO + perf), puis client-side. <strong style="color:#fff;">useApiFetch</strong> gère le JWT en SSR et CSR automatiquement.</div>
+      </div>
+
+      <div class="tcard tcard-yellow">
+        <div class="tcard-fa"><i class="fa-solid fa-gauge-high"></i></div>
+        <div class="tcard-title">Algo pression multi-facteurs</div>
+        <div class="tcard-why">Bases par discipline + ajustements dynamiques : température, précipitations WMO, vent, niveau rider. Facteurs exposés dans l'API.</div>
+      </div>
+
+      <div class="tcard tcard-sf">
+        <div class="tcard-fa"><i class="fa-solid fa-key"></i></div>
+        <div class="tcard-title">JWT stateless</div>
+        <div class="tcard-why">Authentification sans session serveur. Scalable, compatible PWA offline et partage du token entre Nuxt SSR et requêtes client.</div>
+      </div>
+
+      <div class="tcard tcard-blue-l">
+        <div class="tcard-fa"><i class="fa-solid fa-mobile-screen-button"></i></div>
+        <div class="tcard-title">PWA mobile-first</div>
+        <div class="tcard-why">Installable iOS/Android. Bottom sheets via Teleport + position:fixed. Safe-area iPhone. dvh Safari. Géolocalisation cachée localStorage.</div>
+      </div>
+
+      <div class="tcard tcard-yl">
+        <div class="tcard-fa"><i class="fa-solid fa-memory"></i></div>
+        <div class="tcard-title">Cache API stratifié</div>
+        <div class="tcard-why">GPS : 1h · Géométrie OSM : 7j · API routes : sessionStorage. <strong style="color:#5a4800;">Zéro re-demande de permission</strong> GPS pendant la sortie.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S8 CI/CD ══════════════════════════════════════ -->
+<div class="slide bg-white" id="s8">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-brands fa-github"></i> Pipeline CI/CD · ×2</div>
+      <div class="banner-title">CI/CD — GitHub Actions</div>
+    </div>
+    <div class="banner-num">08</div>
+  </div>
+  <div class="content" style="justify-content:center;gap:clamp(12px,1.6vw,22px);">
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-icon"><i class="fa-solid fa-code-commit"></i></div>
+        <div class="pipe-title">Push / PR</div>
+        <div class="pipe-sub">Déclencheur sur<br>push vers main<br>ou pull request</div>
+        <div class="pipe-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="pipe-step active">
+        <div class="pipe-icon"><i class="fa-solid fa-flask"></i></div>
+        <div class="pipe-title">PHPUnit</div>
+        <div class="pipe-sub">Tests unitaires<br>contrôleurs Symfony<br>algo pression</div>
+        <div class="pipe-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon"><i class="fa-solid fa-hammer"></i></div>
+        <div class="pipe-title">Build</div>
+        <div class="pipe-sub">nuxt build +<br>composer install<br>Docker image</div>
+        <div class="pipe-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="pipe-step success">
+        <div class="pipe-icon"><i class="fa-solid fa-rocket"></i></div>
+        <div class="pipe-title">Déploiement</div>
+        <div class="pipe-sub">Push registry<br>Docker + restart<br>containers auto</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.3vw,18px);">
+      <div class="hstrip hstrip-blue">
+        <div class="ic ic-sm ic-blue" style="flex-shrink:0;margin-top:1px;border-radius:clamp(6px,.7vw,9px);"><i class="fa-solid fa-vial"></i></div>
+        <div>
+          <div class="hstrip-label">Tests PHPUnit couverts</div>
+          <ul class="blist" style="margin-top:5px;">
+            <li>Contrôleur de pression — valeurs gravel/rain/dry</li>
+            <li>Contrôleur de télémétrie — alertes pression</li>
+            <li>Guards d'entités (Ride::hasUser)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hstrip hstrip-yellow">
+        <div class="ic ic-sm ic-yellow" style="flex-shrink:0;margin-top:1px;border-radius:clamp(6px,.7vw,9px);"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div class="hstrip-label">Résultat</div>
+          <div style="font-size:clamp(18px,2.8vw,32px);font-weight:900;color:var(--blue);letter-spacing:-.03em;line-height:1;margin-top:4px;">Pipeline vert</div>
+          <div style="font-size:clamp(10px,1.1vw,13px);color:var(--ink-2);margin-top:5px;">Aucune régression non détectée depuis la mise en place des tests.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ S9 UI/UX ══════════════════════════════════════ -->
+<div class="slide bg-white" id="s9">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-palette"></i> Expérience UX/UI · ×3</div>
+      <div class="banner-title">Design System Aurora</div>
+    </div>
+    <div class="banner-num">09</div>
+  </div>
+  <div class="content">
+    <div class="ux-grid">
+
+      <div class="ux-card" style="border-top-color:var(--blue);">
+        <div class="ux-icon" style="background:var(--blue);"><i class="fa-solid fa-mobile-screen-button"></i></div>
+        <div class="ux-title">Mobile-first PWA</div>
+        <div class="ux-body">Installable sur iOS &amp; Android. Tab bar native, navigation sans rechargement, transitions fluides.</div>
+        <span class="ux-tag ux-tag-blue"><i class="fa-solid fa-display"></i> standalone</span>
+      </div>
+
+      <div class="ux-card" style="border-top-color:var(--yellow);">
+        <div class="ux-icon" style="background:var(--yellow);color:var(--ink);"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+        <div class="ux-title">Bottom Sheets</div>
+        <div class="ux-body">Notifications, profil rider, boutique — sans quitter la page. position:fixed + Teleport pour viewport-anchoring.</div>
+        <span class="ux-tag ux-tag-yellow"><i class="fa-solid fa-code"></i> Nuxt Teleport</span>
+      </div>
+
+      <div class="ux-card" style="border-top-color:var(--ink);">
+        <div class="ux-icon" style="background:var(--ink);"><i class="fa-solid fa-swatchbook"></i></div>
+        <div class="ux-title">Design System</div>
+        <div class="ux-body">Tokens CSS : --blue, --yellow, --ink. Classes utilitaires : .card, .btn, .badge, .iconbtn. Dark/light cohérent.</div>
+        <span class="ux-tag ux-tag-blue"><i class="fa-solid fa-droplet"></i> CSS Custom Props</span>
+      </div>
+
+      <div class="ux-card" style="border-top-color:var(--red);">
+        <div class="ux-icon" style="background:var(--red);"><i class="fa-brands fa-apple"></i></div>
+        <div class="ux-title">Safe-area iPhone</div>
+        <div class="ux-body">env(safe-area-inset-bottom) pour le home indicator. dvh au lieu de vh pour Safari. Testé sur iPhone 16.</div>
+        <span class="ux-tag" style="background:var(--red-l);color:var(--red);"><i class="fa-solid fa-mobile-screen"></i> iOS 16+</span>
+      </div>
+
+    </div>
+    <div style="margin-top:clamp(10px,1.2vw,16px);display:flex;gap:clamp(6px,.8vw,12px);align-items:center;flex-wrap:wrap;">
+      <span style="font-size:clamp(10px,1.1vw,13px);font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-sitemap" style="color:var(--blue);"></i> Pages :</span>
+      <span class="chip chip-outline">/home</span><span class="chip chip-outline">/pressure</span><span class="chip chip-outline">/ride</span><span class="chip chip-outline">/rewards</span><span class="chip chip-outline">/routes</span><span class="chip chip-outline">/community</span><span class="chip chip-outline">/store</span><span class="chip chip-outline">/events</span><span class="chip chip-outline">/profile</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S10 ACQUISITION ══════════════════════════════ -->
+<div class="slide bg-white" id="s10">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-chart-line"></i> Stratégie d'acquisition · ×2</div>
+      <div class="banner-title">Go-to-market &amp; Acquisition</div>
+    </div>
+    <div class="banner-num">10</div>
+  </div>
+  <div class="content">
+    <div class="acq-split">
+      <div class="acq-col digital">
+        <div class="acq-col-head">
+          <div class="acq-col-head-icon"><i class="fa-solid fa-wifi"></i></div>
+          <div class="acq-col-title">Canal Digital</div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div>
+            <div class="acq-item-title">SEO longue traîne</div>
+            <div class="acq-item-body">"pression pneu vélo gravel", "app vélo pression temps réel". JSON-LD, Open Graph, PWA indexable.</div>
+          </div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-hashtag"></i></div>
+          <div>
+            <div class="acq-item-title">Réseaux sociaux</div>
+            <div class="acq-item-body">Instagram · TikTok · X · LinkedIn. Hashtag <strong style="color:#fff;">#AuroraByMichelin</strong>.</div>
+          </div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-medal"></i></div>
+          <div>
+            <div class="acq-item-title">Programme ambassadeurs in-app</div>
+            <div class="acq-item-body">Système de rangs (Explorer → Michelin Ambassador) intégré nativement dans l'app.</div>
+          </div>
+        </div>
+      </div>
+      <div class="acq-col physical">
+        <div class="acq-col-head">
+          <div class="acq-col-head-icon"><i class="fa-solid fa-store"></i></div>
+          <div class="acq-col-title">Canal Physique Michelin</div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-wrench"></i></div>
+          <div>
+            <div class="acq-item-title">Réseau revendeurs agréés</div>
+            <div class="acq-item-body">QR code Aurora en boutique. Installation PWA proposée à l'achat d'un pneu Michelin.</div>
+          </div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-flag-checkered"></i></div>
+          <div>
+            <div class="acq-item-title">Événements cyclistes</div>
+            <div class="acq-item-body">Présence sur les courses partenaires. Aurora recommande le pneu adapté à chaque discipline.</div>
+          </div>
+        </div>
+        <div class="acq-item">
+          <div class="acq-item-ic"><i class="fa-solid fa-arrows-rotate"></i></div>
+          <div>
+            <div class="acq-item-title">Boucle achat → fidélisation</div>
+            <div class="acq-item-body">Alerte pression → revendeur → achat → points → rang → nouvel achat.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S11 LIVRABLES ════════════════════════════════ -->
+<div class="slide bg-white" id="s11">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-boxes-stacked"></i> Brief 100% couvert</div>
+      <div class="banner-title">Livrables réalisés</div>
+    </div>
+    <div class="banner-num">11</div>
+  </div>
+  <div class="content" style="justify-content:center;gap:clamp(10px,1.2vw,16px);">
+
+    <div class="liv-grid">
+      <div class="liv-col">
+        <div class="liv-col-label"><i class="fa-solid fa-laptop-code"></i> Livrable technique</div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Application déployée en ligne</div><div class="liv-sub">PWA Nuxt 4 + API Symfony 7 · accessible mobile &amp; desktop</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Tests unitaires &amp; d'intégration</div><div class="liv-sub">PHPUnit · Vitest · Playwright E2E — pipeline vert</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Conteneurisation Docker</div><div class="liv-sub">Docker Compose · 4 services · Taskfile orchestration</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">CI/CD — GitHub Actions</div><div class="liv-sub">Push → PHPUnit → Build → Déploiement automatisé</div></div>
+        </div>
+      </div>
+      <div class="liv-col">
+        <div class="liv-col-label"><i class="fa-solid fa-file-lines"></i> Documentation</div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Documentation développeur</div><div class="liv-sub">README · Architecture · Guide d'installation · Déploiement</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Documentation utilisateur + slides</div><div class="liv-sub">Features PDF · Executive Summary · Cette présentation</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Maquettes &amp; parcours utilisateur</div><div class="liv-sub">User Journey PDF · Tests Playwright sur parcours réel</div></div>
+        </div>
+        <div class="liv-row">
+          <div class="liv-check"><i class="fa-solid fa-check"></i></div>
+          <div><div class="liv-title">Code source propre &amp; versionné</div><div class="liv-sub">GitHub · branches feat/fix · TypeScript strict · PSR-12</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="liv-strip">
+      <i class="fa-solid fa-layer-group" style="color:var(--yellow);font-size:clamp(18px,2.5vw,30px);flex-shrink:0;"></i>
+      <div class="liv-strip-text">
+        11 fonctionnalités · 3 niveaux de tests · 4 PDF de documentation · Pipeline CI/CD complet<br>
+        <span>Nuxt 4 · Symfony 7 · PostgreSQL 16 · Docker · GitHub Actions · PHPUnit · Vitest · Playwright</span>
+      </div>
+      <div class="liv-strip-badge"><i class="fa-solid fa-award"></i></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ S12 AMÉLIORATIONS ════════════════════════════ -->
+<div class="slide bg-white" id="s12">
+  <div class="ybar"></div>
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-eyebrow"><i class="fa-solid fa-arrow-trend-up"></i> Si on avait eu plus de temps</div>
+      <div class="banner-title">Ce que nous pourrions améliorer</div>
+    </div>
+    <div class="banner-num">12</div>
+  </div>
+  <div class="content">
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1vw,14px);flex:1;align-items:start;">
+
+      <div class="tcard tcard-blue">
+        <div class="tcard-fa"><i class="fa-solid fa-route"></i></div>
+        <div class="tcard-title">Tracking GPS live</div>
+        <div class="tcard-why">Tracé de route en temps réel sur la carte pendant la sortie — courbe de pression superposée au profil altimétrique.</div>
+      </div>
+
+      <div class="tcard tcard-yellow">
+        <div class="tcard-fa"><i class="fa-solid fa-brain"></i></div>
+        <div class="tcard-title">Recommandations ML</div>
+        <div class="tcard-why">Modèle de Machine Learning entraîné sur l'historique des sorties pour prédire la pression optimale avant même le départ.</div>
+      </div>
+
+      <div class="tcard tcard-dark">
+        <div class="tcard-fa"><i class="fa-brands fa-bluetooth"></i></div>
+        <div class="tcard-title">Capteur physique BLE</div>
+        <div class="tcard-why">Intégration d'un vrai module Bluetooth Low Energy sur le pneu pour remplacer le simulateur Python par des données réelles.</div>
+      </div>
+
+      <div class="tcard tcard-blue-l">
+        <div class="tcard-fa"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="tcard-title">Analyse post-sortie</div>
+        <div class="tcard-why">Graphiques de pression, vitesse et altitude sur toute la sortie. Détection automatique des segments difficiles.</div>
+      </div>
+
+      <div class="tcard tcard-sf">
+        <div class="tcard-fa"><i class="fa-solid fa-link"></i></div>
+        <div class="tcard-title">Intégration Strava / Komoot</div>
+        <div class="tcard-why">Import automatique des itinéraires et synchronisation des sorties avec les plateformes cyclistes déjà utilisées par la communauté.</div>
+      </div>
+
+      <div class="tcard tcard-yl">
+        <div class="tcard-fa"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div class="tcard-title">Marketplace intégrée</div>
+        <div class="tcard-why">Achat direct de pneus Michelin dans l'app avec livraison chez le revendeur le plus proche — boucle commerciale complète.</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:clamp(10px,1.2vw,16px);background:var(--sf);border-radius:clamp(8px,1vw,14px);padding:clamp(10px,1.2vw,16px) clamp(14px,1.8vw,22px);display:flex;align-items:center;gap:clamp(10px,1.2vw,16px);">
+      <div class="ic ic-sm ic-blue" style="border-radius:clamp(6px,.7vw,9px);flex-shrink:0;"><i class="fa-solid fa-comment-dots"></i></div>
+      <span style="font-size:clamp(11px,1.25vw,14px);color:var(--ink-2);line-height:1.45;">Ces évolutions sont déjà identifiées dans notre backlog. L'architecture Aurora — API REST, SSE, composables Nuxt — est conçue pour les accueillir sans refonte majeure.</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ S13 DEMO ══════════════════════════════════════ -->
+<div class="slide bg-dark" id="s13">
+  <div class="ybar"></div>
+  <div class="ring" style="width:50%;padding-top:50%;top:-20%;right:-12%;"></div>
+  <div class="ring" style="width:32%;padding-top:32%;bottom:-10%;left:-8%;border-color:rgba(255,209,0,.06);"></div>
+
+  <div class="demo-inner">
+    <a href="https://michelin-aurora.duckdns.org/" target="_blank" class="demo-btn" style="text-decoration:none;cursor:pointer;"><i class="fa-solid fa-play"></i></a>
+    <div>
+      <div style="font-size:clamp(32px,6vw,64px);font-weight:900;letter-spacing:-.03em;color:#fff;line-height:.95;">Démonstration</div>
+      <div style="font-size:clamp(13px,1.8vw,20px);color:rgba(255,255,255,.35);margin-top:10px;font-weight:400;">Parcours utilisateur complet · 5 minutes</div>
+    </div>
+    <div class="demo-flow">
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">1</span> Inscription</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">2</span> Onboarding</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">3</span> Home &amp; Pression</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">4</span> Sortie live</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">5</span> Alerte &amp; Notifs</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">6</span> Récompenses</span><span class="demo-arr"><i class="fa-solid fa-chevron-right"></i></span></div>
+      <div class="demo-step"><span class="demo-label"><span class="demo-n">7</span> Communauté</span></div>
+    </div>
+  </div>
+</div>
+
+</div></div>
+
+<button class="nav-btn nav-prev" onclick="go(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+<button class="nav-btn nav-next" onclick="go(1)"><i class="fa-solid fa-chevron-right"></i></button>
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+const slides = document.querySelectorAll('.slide')
+const total  = slides.length
+let cur = 0
+function show(n) {
+  slides[cur].classList.remove('active')
+  cur = (n + total) % total
+  slides[cur].classList.add('active')
+  document.getElementById('progress').style.width = ((cur+1)/total*100)+'%'
+  document.getElementById('counter').textContent  = (cur+1)+' / '+total
+}
+function go(d) { show(cur+d) }
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown') { e.preventDefault(); go(1) }
+  if (e.key==='ArrowLeft' ||e.key==='ArrowUp') { e.preventDefault(); go(-1) }
+  if (e.key==='f'||e.key==='F') document.documentElement.requestFullscreen?.()
+})
+document.querySelector('.deck').addEventListener('click', e => {
+  if (e.target.closest('.nav-btn')) return
+  go(e.clientX/window.innerWidth>.5?1:-1)
+})
+show(0)
+</script>
+</body>
+</html>
