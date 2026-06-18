@@ -282,14 +282,14 @@ function logout() { logoutAuth(); router.push('/') }
             <span class="small" style="color: var(--ink-3)">142 kg CO₂</span>
             <Icon name="chev" :size="16" color="var(--mute)" />
           </button>
-          <NuxtLink to="/ride/alert" class="action-row" style="text-decoration:none">
+          <button class="action-row" @click="notifSheet.open()">
             <div class="action-icon" style="background: color-mix(in srgb, var(--ink-2) 10%, transparent)">
               <Icon name="bell" :size="19" color="var(--ink-2)" />
             </div>
             <span class="small action-label">Alertes & notifications</span>
             <span v-if="(notifCount?.unread ?? 0) > 0" class="action-badge">{{ notifCount!.unread }}</span>
             <Icon name="chev" :size="16" color="var(--mute)" />
-          </NuxtLink>
+          </button>
         </div>
 
         <button
@@ -345,9 +345,10 @@ function logout() { logoutAuth(); router.push('/') }
   width: 42px; height: 42px;
   border-radius: 13px;
   background: var(--surface-2);
+  border: none;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  text-decoration: none;
+  cursor: pointer;
   transition: background .15s;
 }
 .notif-bell.has-notif { background: color-mix(in srgb, var(--red) 10%, var(--surface-2)); }

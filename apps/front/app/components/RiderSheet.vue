@@ -73,7 +73,7 @@ async function toggleFriend() {
 </script>
 
 <template>
-  <Sheet :open="!!riderId" height="82dvh" @close="close">
+  <Sheet :open="!!riderId" @close="close">
     <div v-if="loading" class="rs-loading">
       <div class="tiny" style="color: var(--mute)">Chargement…</div>
     </div>
@@ -199,8 +199,12 @@ async function toggleFriend() {
   height: 200px;
 }
 
+/* ── Root scroll wrapper ───────────────────────────────── */
+.rs-loading,
+div[v-else-if] { overflow-x: hidden; width: 100%; box-sizing: border-box; }
+
 /* ── Hero ──────────────────────────────────────────────── */
-.rs-hero { margin: -10px -20px 0; }
+.rs-hero { margin: -10px -20px 0; overflow: hidden; }
 
 .rs-photo {
   position: relative;
@@ -236,6 +240,9 @@ async function toggleFriend() {
   letter-spacing: -.01em;
   color: var(--ink);
   line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Stats ─────────────────────────────────────────────── */

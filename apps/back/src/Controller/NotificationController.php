@@ -128,4 +128,34 @@ class NotificationController
 
         return new JsonResponse(['ok' => true]);
     }
+
+    #[Route('/api/notifications/{id}', name: 'api_notification_delete', methods: ['DELETE'])]
+    public function delete(string $id): JsonResponse
+    {
+        /** @var \App\Entity\User $me */
+        $me = $this->security->getUser();
+
+        // Friendship-type virtual notifications have id like "friendship-<uuid>"
+        if (str_starts_with($id, 'friendship-')) {
+            $fid = substr($id, strlen('friendship-'));
+            $f   = $this->friendshipRepository->find($fid);
+            if (!$f || $f->getUserTo()->getId()->toString() !== $me->getId()->toString()) {
+                return new JsonResponse(['error' => 'Not found'], 404);
+            }
+            $this->entityManager->remove($f);
+            $this->entityManager->flush();
+
+            return new JsonResponse(['ok' => true]);
+        }
+
+        $n = $this->notificationRepository->find($id);
+        if (!$n || $n->getUser()->getId()->toString() !== $me->getId()->toString()) {
+            return new JsonResponse(['error' => 'Not found'], 404);
+        }
+
+        $this->entityManager->remove($n);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['ok' => true]);
+    }
 }

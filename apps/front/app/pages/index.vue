@@ -33,8 +33,7 @@ const TireSceneLazy = defineAsyncComponent(() => import('~/components/TireScene.
           La liaison au sol,<br>devenue intelligence.
         </div>
         <p class="lp-m-body">
-          Itinéraires sur-mesure, pression dynamique,<br>
-          télémétrie temps réel et récompenses.
+          Itinéraires sur-mesure, pression dynamique, télémétrie temps réel et récompenses.
         </p>
       </div>
 
@@ -46,7 +45,7 @@ const TireSceneLazy = defineAsyncComponent(() => import('~/components/TireScene.
         <NuxtLink to="/login" class="btn btn-tertiary btn-block lp-m-btn">
           J'ai déjà un compte
         </NuxtLink>
-        <div class="tiny" style="text-align: center; margin-top: 6px; color: var(--mute)">
+        <div class="lp-m-footer-note">
           Michelin LB 2 Wheels · Route · Gravel · VTT · VAE
         </div>
       </div>
@@ -118,13 +117,16 @@ const TireSceneLazy = defineAsyncComponent(() => import('~/components/TireScene.
 .lp-screen {
   background: radial-gradient(140% 70% at 50% -5%, #D8E4F5 0%, #EEF2FA 45%, #E4EBF7 100%);
   min-height: 100vh;
+  /* empêche le scroll horizontal sur mobile */
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 @media (min-width: 900px) {
   .lp-screen { height: 100vh; overflow: hidden; }
 }
 
 /* ── Mobile : visible, desktop : masqué ── */
-.lp-mobile  { display: flex; flex-direction: column; }
+.lp-mobile  { display: flex; flex-direction: column; overflow-x: hidden; width: 100%; }
 .lp-desktop { display: none; }
 
 /* ── Styles mobile ── */
@@ -170,9 +172,20 @@ const TireSceneLazy = defineAsyncComponent(() => import('~/components/TireScene.
 .lp-m-ctas {
   margin-top: 24px;
   display: flex; flex-direction: column; gap: 12px;
-  padding-bottom: 40px;
+  padding-bottom: max(40px, env(safe-area-inset-bottom, 40px));
 }
 .lp-m-btn { height: 56px; font-size: 16px; }
+
+.lp-m-footer-note {
+  font-size: 11px;
+  text-align: center;
+  color: var(--mute);
+  margin-top: 6px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 0 4px;
+}
 
 /* ── Desktop ≥ 900px ── */
 @media (min-width: 900px) {

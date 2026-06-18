@@ -27,6 +27,9 @@ const { data: rewards } = await useApiFetch<RewardsDto>('/api/rewards', { key: '
 const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'home-routes', default: () => [] })
 
 const { frontStr, rearStr, isRain } = usePressure()
+const notifSheet = useNotificationsSheet()
+const apiBase = useApiBase()
+const { data: notifCount } = await useApiFetch<{ unread: number }>('/api/notifications/count', { key: 'home-notif-count' })
 
 const initials = computed(() => {
   const n = profile.value?.name ?? ''
@@ -36,6 +39,12 @@ const firstName = computed(() => profile.value?.name?.split(' ')[0] ?? '')
 const rankLabel = computed(() => (profile.value?.rewards_level ?? '').replace(/_/g, ' '))
 
 const activeBike = computed(() => tires.value?.[0] ?? null)
+
+const bikePhotoSrc = computed(() => {
+  const url = profile.value?.profile?.bike_photo_url
+  if (url) return url.startsWith('/') ? apiBase + url : url
+  return imageFor(activeBike.value?.image_key)
+})
 const topRoutes = computed(() => (routes.value ?? []).slice(0, 2))
 
 const rewardsProgress = computed(() => {
@@ -56,13 +65,10 @@ const rewardsProgress = computed(() => {
               <div class="h-sm">{{ firstName }} · <span style="color: var(--lime-600)">{{ rankLabel }}</span></div>
             </div>
           </div>
-          <div class="row" style="gap: 10px">
-            <MichelinLogo :height="20" style="opacity: .92" />
-            <NuxtLink to="/ride/alert" class="iconbtn" style="position: relative">
-              <Icon name="bell" :size="20" />
-              <span style="position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 99px; background: var(--red); border: 2px solid var(--card)" />
-            </NuxtLink>
-          </div>
+          <button class="home-bell iconbtn" @click="notifSheet.open()">
+            <Icon name="bell" :size="20" />
+            <span v-if="(notifCount?.unread ?? 0) > 0" class="home-bell-badge">{{ notifCount!.unread }}</span>
+          </button>
         </div>
       </div>
 
@@ -85,7 +91,7 @@ const rewardsProgress = computed(() => {
               </div>
               <Photo
                 class="bike-photo"
-                :src="profile?.profile?.bike_photo_url || imageFor(activeBike?.image_key)"
+                :src="bikePhotoSrc"
                 alt="Vélo actif"
                 :radius="16"
                 style="width: 130px; height: 96px; flex: 0 0 auto; object-fit: cover"
@@ -205,6 +211,23 @@ const rewardsProgress = computed(() => {
 </template>
 
 <style scoped>
+/* ── Bell badge ──────────────────────────────────────── */
+.home-bell { position: relative; }
+.home-bell-badge {
+  position: absolute;
+  top: 6px; right: 6px;
+  min-width: 16px; height: 16px;
+  border-radius: 99px;
+  background: var(--red);
+  color: #fff;
+  font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--card);
+  line-height: 1;
+  pointer-events: none;
+}
+
 /* ── Desktop : thème navy Michelin ── */
 @media (min-width: 900px) {
   .home-screen {

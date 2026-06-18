@@ -46,7 +46,7 @@ class TelemetryController
 
         $this->entityManager->persist($session);
 
-        if ($alertTriggered) {
+        if ($alertTriggered && $ride->hasUser()) {
             $pressure = (float) ($payload['pressure_rear_bar'] ?? $payload['pressure_front_bar'] ?? 0);
             $notif = new Notification();
             $notif->setUser($ride->getUser());
