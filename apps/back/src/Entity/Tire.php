@@ -56,6 +56,13 @@ class Tire
         return $this->id;
     }
 
+    public function setId(Uuid $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;

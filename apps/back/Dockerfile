@@ -4,7 +4,9 @@ RUN apk add --no-cache \
     nginx \
     supervisor \
     postgresql-dev \
-    && docker-php-ext-install pdo pdo_pgsql \
+    libzip-dev \
+    libpng-dev \
+    && docker-php-ext-install pdo pdo_pgsql zip gd \
     && echo "output_buffering = Off" > /usr/local/etc/php/conf.d/sse.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
