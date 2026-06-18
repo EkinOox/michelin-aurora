@@ -42,8 +42,6 @@ const bikePhotoSrc = computed(() => {
   if (url) return url.startsWith('/') ? apiBase + url : url
   return imageFor(activeBike.value?.image_key)
 })
-const topRoutes = computed(() => (routes.value ?? []).slice(0, 2))
-
 const rewardsProgress = computed(() => {
   if (!rewards.value || !rewards.value.next_at) return 100
   return Math.min(100, (rewards.value.points / rewards.value.next_at) * 100)
