@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { imageFor } from '~/data/images'
-import type { RouteDto } from '~/components/RouteRow.vue'
-
 
 definePageMeta({ tabbar: true })
 
@@ -24,7 +22,6 @@ interface RewardsDto { points: number, rank: string, next_at: number | null }
 const { data: profile } = await useApiFetch<ProfileDto>('/api/profile', { key: 'home-profile' })
 const { data: tires } = await useApiFetch<TireDto[]>('/api/tires', { key: 'home-tires', default: () => [] })
 const { data: rewards } = await useApiFetch<RewardsDto>('/api/rewards', { key: 'home-rewards' })
-const { data: routes } = await useApiFetch<RouteDto[]>('/api/routes', { key: 'home-routes', default: () => [] })
 
 const { frontStr, rearStr, isRain } = usePressure()
 const notifSheet = useNotificationsSheet()
@@ -45,11 +42,69 @@ const bikePhotoSrc = computed(() => {
   if (url) return url.startsWith('/') ? apiBase + url : url
   return imageFor(activeBike.value?.image_key)
 })
-const topRoutes = computed(() => (routes.value ?? []).slice(0, 2))
-
 const rewardsProgress = computed(() => {
   if (!rewards.value || !rewards.value.next_at) return 100
   return Math.min(100, (rewards.value.points / rewards.value.next_at) * 100)
+})
+
+// ── Routes recommandées ──────────────────────────────────────────
+// Shared state with routes page + same localStorage cache
+const ROUTES_KEY = 'aurora-routes'
+const POS_KEY    = 'aurora-position'
+const CACHE_TTL  = 60 * 60 * 1000 // 1h
+
+const routesState = useRoutesState()
+const routesLoading = ref(false)
+
+// Pick 5 pseudo-random routes seeded by today's date (changes daily)
+const topRoutes = computed(() => {
+  const all = routesState.value
+  if (all.length === 0) return []
+  const seed = Math.floor(Date.now() / 86_400_000) // changes each day
+  const start = seed % Math.max(1, all.length - 4)
+  return all.slice(start, start + 5)
+})
+
+onMounted(async () => {
+  // Already in memory (user visited routes page this session)
+  if (routesState.value.length > 0) return
+
+  // Try localStorage cache
+  try {
+    const raw = localStorage.getItem(ROUTES_KEY)
+    if (raw) {
+      const { ts, data } = JSON.parse(raw)
+      if (Date.now() - ts < CACHE_TTL && data?.length) {
+        routesState.value = data
+        return
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Fetch from Overpass using cached or default position
+  let lat = 43.5297, lon = 5.4474
+  try {
+    const pos = localStorage.getItem(POS_KEY)
+    if (pos) { const p = JSON.parse(pos); lat = p.lat; lon = p.lon }
+    else {
+      const geo = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation
+          ? navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+          : reject(new Error('no geo')),
+      )
+      lat = geo.coords.latitude
+      lon = geo.coords.longitude
+      localStorage.setItem(POS_KEY, JSON.stringify({ lat, lon }))
+    }
+  } catch { /* use default */ }
+
+  routesLoading.value = true
+  try {
+    const result = await fetchRoutes(lat, lon)
+    routesState.value = result
+    localStorage.setItem(ROUTES_KEY, JSON.stringify({ ts: Date.now(), data: result }))
+  } catch { /* fail silently */ }
+  finally { routesLoading.value = false }
 })
 </script>
 
@@ -205,7 +260,32 @@ const rewardsProgress = computed(() => {
           <span class="h-sm">Routes recommandées</span>
           <NuxtLink to="/routes" class="small" style="color: var(--lime-600); font-weight: 700">Voir tout</NuxtLink>
         </div>
-        <RouteRow v-for="r in topRoutes" :key="r.id" :route="r" />
+
+        <!-- Loading skeleton -->
+        <template v-if="routesLoading">
+          <div v-for="i in 3" :key="i" class="card route-skeleton" style="margin-bottom: 10px">
+            <div class="route-skeleton-thumb" />
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 7px">
+              <div class="route-skeleton-line" style="width: 40%; height: 12px" />
+              <div class="route-skeleton-line" style="width: 75%; height: 16px" />
+              <div class="route-skeleton-line" style="width: 55%; height: 11px" />
+            </div>
+          </div>
+        </template>
+
+        <!-- Empty state -->
+        <div v-else-if="topRoutes.length === 0" class="card" style="padding: 20px 16px; display: flex; gap: 12px; align-items: center">
+          <Icon name="loc" :size="20" color="var(--mute)" />
+          <div>
+            <div class="small" style="font-weight: 700">Aucune route disponible</div>
+            <div class="tiny" style="margin-top: 2px">
+              <NuxtLink to="/routes" style="color: var(--lime-600); font-weight: 600">Ouvrir la page routes</NuxtLink> pour charger les parcours près de vous.
+            </div>
+          </div>
+        </div>
+
+        <!-- Real routes -->
+        <RouteRow v-else v-for="r in topRoutes" :key="r.id" :route="r" />
       </div>
     </div>
   </div>
@@ -333,6 +413,30 @@ const rewardsProgress = computed(() => {
 
   /* Bouton "Démarrer une sortie" : caché sur desktop */
   .ride-btn { display: none; }
+}
+
+/* ── Route skeleton ─────────────────────────────────────────────────── */
+.route-skeleton {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+.route-skeleton-thumb {
+  width: 58px; height: 58px;
+  border-radius: 14px;
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.route-skeleton-line {
+  border-radius: 6px;
+  background: var(--surface-2);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { opacity: .55; }
+  50%       { opacity: 1; }
 }
 
 /* ── Section Explorer ─────────────────────────────────────────────────── */

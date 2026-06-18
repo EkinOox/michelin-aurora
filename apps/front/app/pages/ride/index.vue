@@ -46,7 +46,13 @@ async function startRide() {
   eventSource = new EventSource(`${apiBase}/api/telemetry/stream?ride_id=${activeRide.value}`)
   eventSource.onopen = () => { connectionStatus.value = 'connected' }
   eventSource.onmessage = (event) => {
-    lastReading.value = JSON.parse(event.data) as TelemetryReading
+    const reading = JSON.parse(event.data) as TelemetryReading
+    lastReading.value = reading
+    if (reading.alert_triggered) {
+      const wheel    = reading.pressure_front_bar < 1.5 ? 'avant' : 'arrière'
+      const pressure = reading.pressure_front_bar < 1.5 ? reading.pressure_front_bar : reading.pressure_rear_bar
+      router.push(`/ride/puncture?wheel=${wheel}&pressure=${pressure.toFixed(3)}`)
+    }
   }
   eventSource.onerror = () => { connectionStatus.value = 'connecting' }
 
@@ -60,10 +66,6 @@ async function startRide() {
 
 function toggleRunning() {
   running.value = !running.value
-}
-
-function goAlert() {
-  router.push('/ride/alert')
 }
 
 onMounted(startRide)
@@ -161,10 +163,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="pad" style="margin-top: 14px">
-        <button class="btn btn-block" style="background: rgba(200,16,46,.14); color: #FF6B7E; border: 1px solid rgba(200,16,46,.35); height: 50px" @click="goAlert">
-          <Icon name="shield" :size="18" /> Simuler une crevaison arrière
-        </button>
-        <div class="tiny" style="text-align: center; margin-top: 8px; color: rgba(255,255,255,.4)">Démo · détection IoT temps réel</div>
+        <div class="tiny" style="text-align: center; color: rgba(255,255,255,.4)">Détection IoT temps réel · alerte automatique</div>
       </div>
     </div>
   </div>

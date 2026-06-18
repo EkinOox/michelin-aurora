@@ -13,7 +13,6 @@ use App\Entity\Enum\TerrainType;
 use App\Entity\Enum\UsageType;
 use App\Entity\Event;
 use App\Entity\NewsArticle;
-use App\Entity\Retailer;
 use App\Entity\RewardCatalogItem;
 use App\Entity\Ride;
 use App\Entity\Route;
@@ -57,40 +56,31 @@ class AppFixtures extends Fixture
         $ride->setStartedAt(new \DateTimeImmutable());
         $manager->persist($ride);
 
+        // Pneus et revendeurs sont gérés par TiresFixture et RetailersFixture (depuis XLSX).
+        // On crée 3 pneus légers ici uniquement pour que les routes ci-dessous
+        // puissent référencer un Tire sans dépendance entre fixtures.
         $tireGravel = new Tire();
         $tireGravel->setName('Power Gravel');
         $tireGravel->setBikeType(BikeType::Gravel);
-        $tireGravel->setScores(['safety' => 88, 'fun' => 92, 'durability' => 85]);
         $tireGravel->setPriceEur('54.90');
         $tireGravel->setAvgKmLifetime(6500);
-        $tireGravel->setImageKey('gravelBike');
-        $tireGravel->setSubtitle('700×40 · Tubeless');
-        $tireGravel->setTag('Compatible');
-        $tireGravel->setColorToken('lime');
+        $tireGravel->setColorToken('#84BD00');
         $manager->persist($tireGravel);
 
         $tireRoad = new Tire();
         $tireRoad->setName('Power Road TLR');
         $tireRoad->setBikeType(BikeType::Route);
-        $tireRoad->setScores(['safety' => 90, 'fun' => 95, 'durability' => 78]);
         $tireRoad->setPriceEur('62.00');
         $tireRoad->setAvgKmLifetime(5800);
-        $tireRoad->setImageKey('roadBlack');
-        $tireRoad->setSubtitle('700×28 · Compétition');
-        $tireRoad->setTag('Upgrade');
-        $tireRoad->setColorToken('blue');
+        $tireRoad->setColorToken('#27509B');
         $manager->persist($tireRoad);
 
         $tireMtb = new Tire();
         $tireMtb->setName('Wild Enduro');
         $tireMtb->setBikeType(BikeType::Vtt);
-        $tireMtb->setScores(['safety' => 82, 'fun' => 89, 'durability' => 90]);
         $tireMtb->setPriceEur('58.50');
         $tireMtb->setAvgKmLifetime(7200);
-        $tireMtb->setImageKey('yellowBike');
-        $tireMtb->setSubtitle('29×2.4 · MTB');
-        $tireMtb->setTag('Technique');
-        $tireMtb->setColorToken('ink');
+        $tireMtb->setColorToken('#E71D36');
         $manager->persist($tireMtb);
 
         $routes = [
@@ -179,20 +169,7 @@ class AppFixtures extends Fixture
             $manager->persist($article);
         }
 
-        $retailers = [
-            ['name' => 'Alltricks', 'sub' => 'Livraison 24h · stock temps réel', 'url' => 'https://www.alltricks.fr/Recherche/?q='],
-            ['name' => 'Cyclable', 'sub' => 'Réseau de magasins en France', 'url' => 'https://www.cyclable.com/recherche?controller=search&s='],
-            ['name' => 'Probikeshop', 'sub' => 'Spécialiste vélo en ligne', 'url' => 'https://www.probikeshop.fr/catalogsearch/result/?q='],
-            ['name' => 'Decathlon', 'sub' => 'Retrait en magasin 2h', 'url' => 'https://www.decathlon.fr/search?Ntt='],
-        ];
-
-        foreach ($retailers as $r) {
-            $retailer = new Retailer();
-            $retailer->setName($r['name']);
-            $retailer->setSub($r['sub']);
-            $retailer->setUrl($r['url']);
-            $manager->persist($retailer);
-        }
+        // Revendeurs gérés par RetailersFixture (depuis XLSX).
 
         $rewardCatalog = [
             ['cost' => 1000, 'title' => '−10 € gamme route', 'sub' => 'Bon Michelin pneus route', 'icon' => 'gift'],
