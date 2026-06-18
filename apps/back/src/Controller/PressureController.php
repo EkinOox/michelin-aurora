@@ -25,15 +25,19 @@ class PressureController
     #[Route('/api/pressure', name: 'api_pressure_recommendation', methods: ['GET'])]
     public function recommendation(
         Request $request,
-        Security $security,
-        CyclistProfileRepository $profileRepo,
+        ?Security $security = null,
+        ?CyclistProfileRepository $profileRepo = null,
     ): JsonResponse {
-        /** @var User $user */
-        $user = $security->getUser();
-        $profile = $profileRepo->findOneBy(['user' => $user]);
+        $bikeType   = 'gravel';
+        $riderLevel = 'intermediate';
 
-        $bikeType   = $profile?->getBikeType()?->value   ?? 'gravel';
-        $riderLevel = $profile?->getRiderLevel()?->value ?? 'intermediate';
+        if ($security !== null && $profileRepo !== null) {
+            /** @var User|null $user */
+            $user    = $security->getUser();
+            $profile = $user ? $profileRepo->findOneBy(['user' => $user]) : null;
+            $bikeType   = $profile?->getBikeType()?->value   ?? 'gravel';
+            $riderLevel = $profile?->getRiderLevel()?->value ?? 'intermediate';
+        }
 
         $base = self::BASE[$bikeType] ?? self::BASE['gravel'];
 
@@ -44,7 +48,11 @@ class PressureController
         $precip      = (float) $request->query->get('precip', 0);
         $weatherCode = (int)   $request->query->get('code', 0);
 
-        $isRain = $precip > 0.1 || in_array($weatherCode, self::RAIN_CODES);
+        // 'rain' shortcut param (bool 0/1) allows direct override
+        $rainParam = $request->query->get('rain');
+        $isRain = ($rainParam !== null)
+            ? (bool)(int)$rainParam
+            : ($precip > 0.1 || in_array($weatherCode, self::RAIN_CODES));
 
         // Temperature: cold = less pressure (stiffer rubber), hot asphalt = thermal expansion
         $tempAdj = match (true) {

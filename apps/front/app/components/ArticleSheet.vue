@@ -12,7 +12,7 @@ function readMore() {
 </script>
 
 <template>
-  <Sheet :open="!!item" height="86%" @close="close">
+  <Sheet :open="!!item" @close="close">
     <div v-if="item" class="screen-scroll" style="padding-bottom: 30px; margin: 0 -20px; padding-left: 20px; padding-right: 20px">
       <Photo :src="item.img" :radius="18" style="height: 180px; margin-bottom: 16px" />
       <div class="row" style="gap: 8px">

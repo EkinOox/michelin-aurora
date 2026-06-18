@@ -45,6 +45,11 @@ class Ride
         return $this->id;
     }
 
+    public function hasUser(): bool
+    {
+        return isset($this->user);
+    }
+
     public function getUser(): User
     {
         return $this->user;
