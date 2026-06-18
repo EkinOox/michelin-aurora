@@ -3,7 +3,7 @@ export interface ArticleItem {
   tag: string
   title: string
   date: string
-  read: string
+  read?: string | null
   img: string
   body: string
   url?: string | null

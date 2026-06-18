@@ -17,7 +17,7 @@ function readMore() {
       <Photo :src="item.img" :radius="18" style="height: 180px; margin-bottom: 16px" />
       <div class="row" style="gap: 8px">
         <span class="badge badge-blue">{{ item.tag }}</span>
-        <span class="tiny">{{ item.date }} · {{ item.read }} de lecture</span>
+        <span class="tiny">{{ item.date }}<template v-if="item.read"> · {{ item.read }} de lecture</template></span>
       </div>
       <div class="h-md" style="margin-top: 12px">{{ item.title }}</div>
       <div class="body" style="margin-top: 12px">{{ item.body }}</div>
