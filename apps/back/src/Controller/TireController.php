@@ -46,6 +46,8 @@ class TireController
             'subtitle' => $tire->getSubtitle(),
             'tag' => $tire->getTag(),
             'color_token' => $tire->getColorToken(),
+            'weight_g' => $tire->getWeightG(),
+            'diameter_label' => $tire->getDiameterLabel(),
         ];
     }
 }

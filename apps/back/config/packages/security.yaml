@@ -34,6 +34,9 @@ security:
     access_control:
         - { path: ^/api/auth/(register|login)$, roles: PUBLIC_ACCESS }
         - { path: ^/api/health, roles: PUBLIC_ACCESS }
+        # Simulateur ESP32 : pas de compte, accès public
+        - { path: ^/api/rides/demo$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/telemetry$, roles: PUBLIC_ACCESS }
         # EventSource (SSE) ne peut pas envoyer de header Authorization : ce flux reste public.
         - { path: ^/api/telemetry/stream, roles: PUBLIC_ACCESS }
         - { path: ^/api/, roles: ROLE_USER }

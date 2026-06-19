@@ -15,6 +15,10 @@ fi
 mkdir -p public/uploads/bikes
 
 # var/, config/jwt et public/uploads doivent être inscriptibles par www-data.
+# var/, config/jwt et public/uploads doivent être inscriptibles par les workers
+# php-fpm (www-data). public/uploads est un volume persistant monté à la racine
+# de l'image (owned root) → on (re)chown à chaque boot, après le montage.
+mkdir -p public/uploads/bikes
 chown -R www-data:www-data var config/jwt public/uploads
 
 # Migrations Doctrine (idempotent ; ne casse pas s'il n'y en a aucune à jouer).

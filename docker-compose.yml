@@ -5,6 +5,8 @@ services:
     build:
       context: ./apps/back
       target: dev
+    # Applique les migrations en attente au démarrage, puis lance le serveur.
+    command: ["sh", "-c", "php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration; exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]
     environment:
       APP_ENV: ${APP_ENV}
       APP_SECRET: ${APP_SECRET}
