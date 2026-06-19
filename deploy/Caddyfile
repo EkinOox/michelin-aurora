@@ -12,6 +12,11 @@ michelin-aurora.duckdns.org {
 		}
 	}
 
+	# Fichiers uploadés (photos vélo) servis par le back (nginx → public/uploads).
+	handle /uploads/* {
+		reverse_proxy back:8080
+	}
+
 	# Tout le reste : front Nuxt (serveur Nitro).
 	handle {
 		reverse_proxy front:3000

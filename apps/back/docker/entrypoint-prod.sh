@@ -11,8 +11,11 @@ if [ ! -f config/jwt/private.pem ]; then
     php bin/console lexik:jwt:generate-keypair --no-interaction --skip-if-exists
 fi
 
-# var/ et config/jwt doivent être lisibles/inscriptibles par les workers php-fpm (www-data).
-chown -R www-data:www-data var config/jwt
+# var/, config/jwt et public/uploads doivent être inscriptibles par les workers
+# php-fpm (www-data). public/uploads est un volume persistant monté à la racine
+# de l'image (owned root) → on (re)chown à chaque boot, après le montage.
+mkdir -p public/uploads/bikes
+chown -R www-data:www-data var config/jwt public/uploads
 
 # Migrations Doctrine (idempotent ; ne casse pas s'il n'y en a aucune à jouer).
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
