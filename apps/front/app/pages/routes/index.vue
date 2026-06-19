@@ -1,6 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Itinéraires cyclistes',
+  description: 'Explorez les itinéraires scorés par l\'IA Michelin — sécurité, plaisir et pneu recommandé pour chaque route. Gravel, route et VTT.',
+  ogTitle: 'Itinéraires cyclistes — Aurora by Michelin',
+  ogDescription: 'Des itinéraires scorés par l\'algorithme Michelin : sécurité, plaisir et pneu adapté à chaque discipline.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 const { data: profile } = await useApiFetch<{ profile: { bike_type: string, rider_level: string } | null }>('/api/profile', { key: 'routes-profile' })
 
 const routes = useRoutesState()

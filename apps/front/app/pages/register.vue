@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Créer un compte',
+  description: 'Rejoignez Aurora by Michelin — la plateforme qui optimise votre pression de pneu, vous récompense à chaque sortie et vous connecte à la communauté cycliste.',
+  ogTitle: 'Créer un compte — Aurora by Michelin',
+  ogDescription: 'Inscrivez-vous gratuitement et transformez chaque sortie vélo avec la technologie Michelin.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 const router = useRouter()
 const { register } = useAuth()
 

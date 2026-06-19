@@ -1,6 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'default' })
 
+useSeoMeta({
+  title: 'Aurora — Cycling Intelligence Platform',
+  description: 'La plateforme Michelin qui optimise votre pression de pneu en temps réel selon la météo, le terrain et votre profil cycliste. Téléchargez la PWA gratuite.',
+  ogTitle: 'Aurora — Cycling Intelligence Platform',
+  ogDescription: 'Pression dynamique, télémétrie live, itinéraires Michelin et récompenses. L\'app cycliste qui transforme chaque sortie.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 // Chargement différé de Three.js — ne bloque pas le premier paint
 const TireSceneLazy = defineAsyncComponent(() => import('~/components/TireScene.vue'))
 </script>

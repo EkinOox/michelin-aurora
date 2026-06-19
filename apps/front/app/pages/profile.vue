@@ -1,6 +1,12 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Mon profil',
+  description: 'Gérez votre profil cycliste Aurora — préférences, statistiques de sortie et récompenses Michelin.',
+  robots: 'noindex',
+})
+
 interface ProfileDto {
   id: string
   name: string

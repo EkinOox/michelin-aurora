@@ -3,6 +3,15 @@ import { imageFor } from '~/data/images'
 
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Boutique Michelin',
+  description: 'Découvrez le catalogue de pneus Michelin — Power Road, Power Gravel, Wild Enduro. Trouvez le pneu parfait pour votre discipline et votre niveau.',
+  ogTitle: 'Boutique pneus Michelin — Aurora',
+  ogDescription: 'Catalogue complet de pneus Michelin pour vélos. Scorés et recommandés selon votre profil cycliste Aurora.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 interface TireDto {
   id: string
   name: string

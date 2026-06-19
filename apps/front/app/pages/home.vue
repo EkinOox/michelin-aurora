@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { imageFor } from '~/data/images'
+
+useSeoMeta({
+  title: 'Accueil',
+  description: 'Votre tableau de bord cycliste — pression recommandée du jour, sorties récentes et actualités Aurora by Michelin.',
+  ogTitle: 'Accueil — Aurora by Michelin',
+  ogDescription: 'Pression du jour, dernières sorties et alertes en temps réel. Votre plateforme cycliste Michelin.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+  robots: 'noindex',
+})
 import type { RouteDto } from '~/components/RouteRow.vue'
 
 
