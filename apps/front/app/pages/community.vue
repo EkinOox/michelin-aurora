@@ -1,6 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Communauté',
+  description: 'Retrouvez d\'autres cyclistes Aurora, suivez leurs sorties et partagez votre passion du vélo avec la communauté Michelin.',
+  ogTitle: 'Communauté cycliste — Aurora by Michelin',
+  ogDescription: 'Connectez-vous avec des cyclistes qui partagent votre passion. Route, Gravel, VTT — la communauté Aurora vous attend.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 interface RiderDto {
   id: string
   name: string

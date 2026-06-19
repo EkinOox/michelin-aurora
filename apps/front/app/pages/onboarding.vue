@@ -1,4 +1,10 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Configuration du profil',
+  description: 'Configurez votre profil cycliste Aurora — type de vélo, niveau et usage — pour des recommandations Michelin personnalisées.',
+  robots: 'noindex',
+})
+
 const router = useRouter()
 
 const BIKE_OPTIONS = [

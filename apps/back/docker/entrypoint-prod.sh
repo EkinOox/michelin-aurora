@@ -11,6 +11,10 @@ if [ ! -f config/jwt/private.pem ]; then
     php bin/console lexik:jwt:generate-keypair --no-interaction --skip-if-exists
 fi
 
+# Créer le répertoire d'uploads si absent (premier démarrage sur volume vierge).
+mkdir -p public/uploads/bikes
+
+# var/, config/jwt et public/uploads doivent être inscriptibles par www-data.
 # var/, config/jwt et public/uploads doivent être inscriptibles par les workers
 # php-fpm (www-data). public/uploads est un volume persistant monté à la racine
 # de l'image (owned root) → on (re)chown à chaque boot, après le montage.

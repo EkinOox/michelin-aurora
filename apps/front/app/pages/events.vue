@@ -3,6 +3,15 @@ import { imageFor } from '~/data/images'
 
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Événements cyclistes',
+  description: 'Participez aux courses et événements partenaires Michelin — Gravel, route, VTT, VAE. Trouvez l\'événement fait pour votre profil cycliste.',
+  ogTitle: 'Événements cyclistes — Aurora by Michelin',
+  ogDescription: 'Courses, randonnées, events partenaires Michelin. Inscrivez-vous et laissez Aurora vous préparer le pneu idéal.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 interface EventDto {
   id: string
   name: string

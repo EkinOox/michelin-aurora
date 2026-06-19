@@ -1,4 +1,10 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Connexion',
+  description: 'Connectez-vous à Aurora by Michelin pour accéder à votre plateforme cycliste personnalisée.',
+  robots: 'noindex',
+})
+
 const router = useRouter()
 const { login } = useAuth()
 

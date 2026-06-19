@@ -8,6 +8,16 @@ const router = useRouter()
 const routes = useRoutesState()
 const r = computed(() => routes.value.find(x => x.id === route.params.id) ?? null)
 
+useHead(() => ({
+  title: r.value?.name ?? 'Itinéraire',
+  meta: [
+    { name: 'description', content: r.value?.description ?? 'Détail d\'un itinéraire cycliste scoré par l\'algorithme Michelin Aurora.' },
+    { property: 'og:title', content: r.value ? `${r.value.name} — Aurora by Michelin` : 'Itinéraire — Aurora by Michelin' },
+    { property: 'og:description', content: r.value?.description ?? 'Itinéraire cycliste Michelin Aurora.' },
+    { property: 'og:image', content: '/icons/icon-512.png' },
+  ],
+}))
+
 // GPS geometry for the map
 interface Pt { lat: number, lon: number }
 const segments = ref<Pt[][]>([])

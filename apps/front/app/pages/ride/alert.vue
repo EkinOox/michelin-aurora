@@ -1,6 +1,12 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: false })
 
+useSeoMeta({
+  title: 'Alerte pression',
+  description: 'Alerte pression critique détectée sur votre pneu. Consultez les revendeurs Michelin agréés les plus proches.',
+  robots: 'noindex',
+})
+
 interface FriendFrom {
   id: string
   name: string

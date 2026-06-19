@@ -24,6 +24,16 @@ const USAGE_LABEL: Record<string, string> = { leisure: 'Loisir', sport: 'Perform
 
 const route = useRoute()
 const router = useRouter()
+
+useHead(() => ({
+  title: rider.value?.name ?? 'Profil rider',
+  meta: [
+    { name: 'description', content: rider.value ? `Profil cycliste de ${rider.value.name} sur Aurora by Michelin — ${rider.value.city}.` : 'Profil cycliste sur Aurora by Michelin.' },
+    { property: 'og:title', content: rider.value ? `${rider.value.name} — Aurora by Michelin` : 'Profil rider — Aurora by Michelin' },
+    { property: 'og:image', content: '/icons/icon-512.png' },
+    { name: 'robots', content: 'noindex' },
+  ],
+}))
 const apiBase = useApiBase()
 
 function photoUrl(url: string | null): string | null {

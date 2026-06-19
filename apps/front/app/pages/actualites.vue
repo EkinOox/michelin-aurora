@@ -3,6 +3,15 @@ import { imageFor } from '~/data/images'
 
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Actualités Michelin',
+  description: 'Les dernières nouvelles du cyclisme, des conseils d\'entretien pneu et les innovations Michelin Aurora — route, gravel, VTT.',
+  ogTitle: 'Actualités cyclistes — Aurora by Michelin',
+  ogDescription: 'Conseils pneus, tendances cyclisme et actu Michelin. Restez à la pointe avec Aurora.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 interface NewsArticleDto {
   id: string
   cat: string

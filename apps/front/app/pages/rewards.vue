@@ -1,6 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: true })
 
+useSeoMeta({
+  title: 'Récompenses',
+  description: 'Gagnez des points Aurora à chaque sortie et échangez-les contre des réductions exclusives sur les pneus Michelin. 5 niveaux de rang cycliste.',
+  ogTitle: 'Récompenses — Aurora by Michelin',
+  ogDescription: 'Explorer, Challenger, Elite… Montez en rang et débloquez des offres Michelin exclusives grâce à vos sorties cyclistes.',
+  ogImage: '/icons/icon-512.png',
+  twitterCard: 'summary',
+})
+
 interface CatalogItem { id: string, cost: number, title: string, sub: string, icon: string }
 interface RewardCode { id: string, code: string, discount_eur: number, used: boolean, generated_at: string }
 interface RewardsDto { points: number, rank: string, next_at: number | null, catalog: CatalogItem[], codes: RewardCode[] }

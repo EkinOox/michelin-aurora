@@ -1,6 +1,12 @@
 <script setup lang="ts">
 definePageMeta({ tabbar: false })
 
+useSeoMeta({
+  title: 'Ma sortie',
+  description: 'Suivez votre sortie cycliste en direct — vitesse, pression des pneus avant/arrière et alertes temps réel avec Aurora by Michelin.',
+  robots: 'noindex',
+})
+
 interface TelemetryReading {
   pressure_front_bar: number
   pressure_rear_bar: number
