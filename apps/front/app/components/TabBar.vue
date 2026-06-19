@@ -1,5 +1,12 @@
 <script setup lang="ts">
-const route = useRoute()
+const route  = useRoute()
+const router = useRouter()
+const { logout } = useAuth()
+
+function handleLogout() {
+  logout()
+  router.push('/')
+}
 
 const cur = computed(() => {
   const p = route.path
@@ -52,9 +59,61 @@ function isActive(key: string) {
       </NuxtLink>
     </div>
 
+    <!-- Déconnexion — visible uniquement en sidebar desktop -->
+    <div class="tb-logout">
+      <button class="logout-btn" @click="handleLogout">
+        <span class="logout-icon">
+          <Icon name="logout" :size="18" color="rgba(255,255,255,.7)" />
+        </span>
+        <span class="logout-label">Se déconnecter</span>
+      </button>
+    </div>
+
     <!-- Footer — visible uniquement en sidebar desktop -->
     <div class="tb-footer">
-      <span class="tiny tb-copy">© 2025 Michelin LB 2 Wheels</span>
+      <span class="tiny tb-copy">© 2025 Michelin</span>
     </div>
   </nav>
 </template>
+
+<style scoped>
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.6);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  margin-bottom: 10px;
+}
+.logout-btn:hover {
+  background: rgba(200,16,46,.2);
+  border-color: rgba(200,16,46,.35);
+  color: #ff8a8a;
+}
+.logout-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.logout-btn:hover .logout-icon {
+  background: rgba(200,16,46,.25);
+}
+.logout-label {
+  flex: 1;
+  text-align: left;
+}
+</style>
