@@ -27,6 +27,8 @@ services:
     volumes:
       # Clés JWT générées une fois par l'entrypoint, persistées entre déploiements.
       - jwt_keys:/var/www/html/config/jwt
+      # Photos vélo uploadées : persistées entre déploiements (sinon écrasées au pull).
+      - uploads:/var/www/html/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -69,6 +71,7 @@ volumes:
   caddy_data:
   caddy_config:
   jwt_keys:
+  uploads:
 
 networks:
   aurora:
