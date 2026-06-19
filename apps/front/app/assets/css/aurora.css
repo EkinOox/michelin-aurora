@@ -327,6 +327,7 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 /* ---------- Éléments TabBar — mobile defaults ---------- */
 /* Masqués sur mobile, affichés en sidebar desktop */
 .tb-brand{ display: none; }
+.tb-logout{ display: none; }
 .tb-footer{ display: none; }
 
 /* Sur mobile, tb-links se comporte comme un flex-row transparent */
@@ -512,10 +513,17 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   /* Bouton play inline dans la nav : caché sur desktop (personne ne fait du vélo sur PC) */
   .tab-center{ display: none; }
 
+  /* Bouton déconnexion au-dessus du footer */
+  .tb-logout{
+    display: flex;
+    padding: 0 10px 8px;
+    flex-shrink: 0;
+  }
+
   /* Footer bas de sidebar */
   .tb-footer{
     display: flex;
-    padding: 16px 22px 28px;
+    padding: 12px 22px 28px;
     border-top: 1px solid rgba(255,255,255,.12);
     flex-shrink: 0;
   }
@@ -563,6 +571,7 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
     box-shadow: 0 8px 32px rgba(0,32,91,.45), 0 2px 0 rgba(255,255,255,.08) inset;
   }
   .tb-brand{ display: none; }
+  .tb-logout{ display: none; }
   .tb-footer{ display: none; }
   .tb-links{
     display: flex;
